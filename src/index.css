@@ -1,0 +1,117 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg-primary: #1a1a22;
+  --color-bg-surface: #21212b;
+  --color-bg-elevated: #2a2a35;
+  --color-border-soft: rgba(242, 240, 235, 0.08);
+  --color-text-primary: #f2f0eb;
+  --color-text-muted: rgba(242, 240, 235, 0.62);
+  --color-accent: #3694fc;
+  --color-accent-soft: rgba(54, 148, 252, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background:
+    radial-gradient(circle at 20% -10%, rgba(54, 148, 252, 0.10), transparent 50%),
+    radial-gradient(circle at 100% 0%, rgba(54, 148, 252, 0.06), transparent 45%),
+    #1a1a22;
+  color: #f2f0eb;
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+::selection {
+  background: rgba(54, 148, 252, 0.28);
+  color: #f2f0eb;
+}
+
+/* Orbit animations */
+@keyframes agent360-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes agent360-spin-rev {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes agent360-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.03); }
+}
+
+@keyframes agent360-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes agent360-bar-pulse {
+  0%, 100% { transform: scaleY(0.32); opacity: 0.55; }
+  50%      { transform: scaleY(1);    opacity: 1; }
+}
+
+@keyframes agent360-sweep {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a360-rotate-slow,
+  .a360-rotate-rev,
+  .a360-pulse,
+  .a360-bar,
+  .a360-sweep {
+    animation: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.a360-bar {
+  transform-origin: bottom;
+  animation: agent360-bar-pulse 1.4s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.a360-sweep {
+  animation: agent360-sweep 2.6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.a360-rotate-slow {
+  transform-origin: center;
+  animation: agent360-spin-slow 32s linear infinite;
+}
+
+.a360-rotate-rev {
+  transform-origin: center;
+  animation: agent360-spin-rev 44s linear infinite;
+}
+
+.a360-pulse {
+  animation: agent360-pulse 4.2s ease-in-out infinite;
+}
+
+.a360-fade-up {
+  animation: agent360-fade-up 0.55s ease-out both;
+}
