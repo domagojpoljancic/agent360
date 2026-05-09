@@ -40,21 +40,55 @@ export type ProviderHealth = {
   id: string
   provider: string
   model: string
-  currentLatency: string
+  avgLatency: string
+  p95Latency: string
+  timeoutRate: string
   availability: string
-  requestsPerMin: string
+  requestThroughput: string
   errorRate: string
-  rateLimitUsage: string
   status: AgentStatus
+  badge?: 'Fastest' | 'Stable' | 'Watch' | 'Degraded'
+  lowLatencyRecommended?: boolean
   sparkline: number[]
+  detail: {
+    avgLatencyTrend: number[]
+    p95LatencyTrend: number[]
+    retries: string
+    failedRequests: string
+    streamingStartDelay: string
+    providerHealth: string
+    regionalInsight: string
+    runtimeBreakdown: {
+      network: string
+      providerProcessing: string
+      retrievalOverhead: string
+      toolOverhead: string
+    }
+    incidents: string[]
+  }
 }
 
-export type TopologyNode = {
-  id: string
+export type RetrievalMetric = {
   label: string
-  layer: 'Users' | 'AI Agents' | 'Models' | 'Tools/APIs' | 'Human Escalation'
-  status: AgentStatus | 'Online'
-  issue?: string
+  value: string
+  tone?: 'healthy' | 'watch' | 'critical' | 'neutral'
+}
+
+export type KnowledgeSourceRow = {
+  id: string
+  source: string
+  availability: string
+  avgLatency: string
+  timeoutRate: string
+  lastSync: string
+  status: 'Healthy' | 'Degraded' | 'Syncing'
+  trend: number[]
+  detail: {
+    queueDepth: string
+    indexDelay: string
+    syncStatus: string
+    vectorAvailability: string
+  }
 }
 
 export const timeRanges = ['1h', '24h', '7d'] as const
@@ -289,85 +323,401 @@ const providerHealthRows24h: ProviderHealth[] = [
     id: 'gpt-4o',
     provider: 'OpenAI',
     model: 'GPT-4o',
-    currentLatency: '2.3s',
-    availability: '99.82%',
-    requestsPerMin: '6.2k',
-    errorRate: '1.1%',
-    rateLimitUsage: '82%',
-    status: 'Degraded',
-    sparkline: [38, 40, 44, 49, 55, 58, 61],
-  },
-  {
-    id: 'claude-sonnet',
-    provider: 'Anthropic',
-    model: 'Claude Sonnet',
-    currentLatency: '1.5s',
-    availability: '99.95%',
-    requestsPerMin: '3.1k',
-    errorRate: '0.5%',
-    rateLimitUsage: '69%',
-    status: 'Stable',
-    sparkline: [34, 33, 34, 35, 36, 36, 37],
-  },
-  {
-    id: 'gemini-pro',
-    provider: 'Google',
-    model: 'Gemini Pro',
-    currentLatency: '1.8s',
-    availability: '99.91%',
-    requestsPerMin: '2.4k',
+    avgLatency: '1.2s',
+    p95Latency: '2.1s',
+    timeoutRate: '1.3%',
+    availability: '99.92%',
+    requestThroughput: '8.1k rpm',
     errorRate: '0.8%',
-    rateLimitUsage: '63%',
     status: 'Stable',
-    sparkline: [29, 31, 34, 33, 35, 37, 39],
+    badge: 'Stable',
+    lowLatencyRecommended: true,
+    sparkline: [31, 33, 34, 35, 36, 34, 33],
+    detail: {
+      avgLatencyTrend: [1.3, 1.25, 1.22, 1.18, 1.2, 1.19, 1.2],
+      p95LatencyTrend: [2.3, 2.25, 2.15, 2.08, 2.12, 2.1, 2.1],
+      retries: '2.1%',
+      failedRequests: '0.6%',
+      streamingStartDelay: '220ms',
+      providerHealth: 'Healthy',
+      regionalInsight: 'Higher latency observed in EU-West during peak hour.',
+      runtimeBreakdown: {
+        network: '160ms',
+        providerProcessing: '710ms',
+        retrievalOverhead: '210ms',
+        toolOverhead: '120ms',
+      },
+      incidents: ['Latency degradation detected in EU-West edge.', 'Elevated retry rate resolved after failover.'],
+    },
   },
   {
-    id: 'embedding',
-    provider: 'Internal',
-    model: 'Embedding Service',
-    currentLatency: '480ms',
-    availability: '99.98%',
-    requestsPerMin: '11.6k',
-    errorRate: '0.2%',
-    rateLimitUsage: '54%',
+    id: 'gpt-4-turbo',
+    provider: 'OpenAI',
+    model: 'GPT-4 Turbo',
+    avgLatency: '1.6s',
+    p95Latency: '2.8s',
+    timeoutRate: '1.7%',
+    availability: '99.87%',
+    requestThroughput: '4.2k rpm',
+    errorRate: '1.0%',
+    status: 'Stable',
+    badge: 'Watch',
+    sparkline: [36, 37, 39, 40, 42, 40, 41],
+    detail: {
+      avgLatencyTrend: [1.7, 1.68, 1.63, 1.59, 1.6, 1.61, 1.6],
+      p95LatencyTrend: [2.9, 2.85, 2.8, 2.75, 2.78, 2.8, 2.8],
+      retries: '2.8%',
+      failedRequests: '0.9%',
+      streamingStartDelay: '280ms',
+      providerHealth: 'Stable',
+      regionalInsight: 'Slightly slower first-token response in APAC.',
+      runtimeBreakdown: {
+        network: '180ms',
+        providerProcessing: '940ms',
+        retrievalOverhead: '260ms',
+        toolOverhead: '130ms',
+      },
+      incidents: ['Provider timeout spike during deploy window.'],
+    },
+  },
+  {
+    id: 'gpt-4.1',
+    provider: 'OpenAI',
+    model: 'GPT-4.1',
+    avgLatency: '1.4s',
+    p95Latency: '2.4s',
+    timeoutRate: '1.4%',
+    availability: '99.90%',
+    requestThroughput: '5.0k rpm',
+    errorRate: '0.9%',
+    status: 'Stable',
+    badge: 'Stable',
+    sparkline: [33, 34, 35, 36, 37, 36, 35],
+    detail: {
+      avgLatencyTrend: [1.45, 1.43, 1.41, 1.39, 1.4, 1.4, 1.4],
+      p95LatencyTrend: [2.5, 2.45, 2.4, 2.35, 2.38, 2.4, 2.4],
+      retries: '2.3%',
+      failedRequests: '0.7%',
+      streamingStartDelay: '240ms',
+      providerHealth: 'Healthy',
+      regionalInsight: 'Latency stable across US and EU regions.',
+      runtimeBreakdown: {
+        network: '170ms',
+        providerProcessing: '820ms',
+        retrievalOverhead: '250ms',
+        toolOverhead: '120ms',
+      },
+      incidents: ['Minor p95 increase after provider routing update.'],
+    },
+  },
+  {
+    id: 'gpt-4o-mini',
+    provider: 'OpenAI',
+    model: 'GPT-4o-mini',
+    avgLatency: '0.9s',
+    p95Latency: '1.5s',
+    timeoutRate: '0.8%',
+    availability: '99.95%',
+    requestThroughput: '9.4k rpm',
+    errorRate: '0.5%',
     status: 'Healthy',
-    sparkline: [46, 45, 44, 43, 42, 41, 40],
+    badge: 'Fastest',
+    lowLatencyRecommended: true,
+    sparkline: [24, 23, 24, 25, 24, 23, 24],
+    detail: {
+      avgLatencyTrend: [0.92, 0.9, 0.89, 0.88, 0.9, 0.9, 0.9],
+      p95LatencyTrend: [1.6, 1.55, 1.5, 1.48, 1.5, 1.5, 1.5],
+      retries: '1.1%',
+      failedRequests: '0.3%',
+      streamingStartDelay: '140ms',
+      providerHealth: 'Healthy',
+      regionalInsight: 'Consistent response times across all active regions.',
+      runtimeBreakdown: {
+        network: '140ms',
+        providerProcessing: '430ms',
+        retrievalOverhead: '210ms',
+        toolOverhead: '80ms',
+      },
+      incidents: ['No critical incidents in selected window.'],
+    },
+  },
+  {
+    id: 'gpt-3.5-turbo',
+    provider: 'OpenAI',
+    model: 'GPT-3.5 Turbo',
+    avgLatency: '0.95s',
+    p95Latency: '1.7s',
+    timeoutRate: '1.0%',
+    availability: '99.93%',
+    requestThroughput: '6.8k rpm',
+    errorRate: '0.7%',
+    status: 'Healthy',
+    badge: 'Stable',
+    sparkline: [26, 27, 28, 27, 28, 29, 28],
+    detail: {
+      avgLatencyTrend: [0.98, 0.96, 0.95, 0.94, 0.95, 0.95, 0.95],
+      p95LatencyTrend: [1.8, 1.75, 1.7, 1.68, 1.7, 1.7, 1.7],
+      retries: '1.6%',
+      failedRequests: '0.4%',
+      streamingStartDelay: '150ms',
+      providerHealth: 'Stable',
+      regionalInsight: 'Occasional jitter in South America region.',
+      runtimeBreakdown: {
+        network: '150ms',
+        providerProcessing: '460ms',
+        retrievalOverhead: '250ms',
+        toolOverhead: '90ms',
+      },
+      incidents: ['Streaming delay increased after provider update.'],
+    },
+  },
+  {
+    id: 'claude-3-opus',
+    provider: 'Anthropic',
+    model: 'Claude 3 Opus',
+    avgLatency: '2.8s',
+    p95Latency: '4.6s',
+    timeoutRate: '3.2%',
+    availability: '99.71%',
+    requestThroughput: '1.9k rpm',
+    errorRate: '1.8%',
+    status: 'Degraded',
+    badge: 'Degraded',
+    sparkline: [58, 60, 63, 67, 65, 68, 70],
+    detail: {
+      avgLatencyTrend: [2.5, 2.6, 2.7, 2.9, 2.8, 2.85, 2.8],
+      p95LatencyTrend: [4.2, 4.3, 4.4, 4.7, 4.5, 4.6, 4.6],
+      retries: '4.6%',
+      failedRequests: '1.5%',
+      streamingStartDelay: '520ms',
+      providerHealth: 'Degraded',
+      regionalInsight: 'Anthropic API degradation detected in EU-West.',
+      runtimeBreakdown: {
+        network: '220ms',
+        providerProcessing: '1960ms',
+        retrievalOverhead: '420ms',
+        toolOverhead: '200ms',
+      },
+      incidents: ['Provider timeout spike', 'Latency degradation detected'],
+    },
+  },
+  {
+    id: 'claude-3-sonnet',
+    provider: 'Anthropic',
+    model: 'Claude 3 Sonnet',
+    avgLatency: '1.7s',
+    p95Latency: '2.9s',
+    timeoutRate: '1.9%',
+    availability: '99.85%',
+    requestThroughput: '3.4k rpm',
+    errorRate: '1.0%',
+    status: 'Stable',
+    badge: 'Stable',
+    sparkline: [39, 40, 41, 43, 42, 43, 44],
+    detail: {
+      avgLatencyTrend: [1.8, 1.75, 1.72, 1.7, 1.71, 1.7, 1.7],
+      p95LatencyTrend: [3.0, 2.95, 2.9, 2.85, 2.88, 2.9, 2.9],
+      retries: '2.9%',
+      failedRequests: '0.8%',
+      streamingStartDelay: '300ms',
+      providerHealth: 'Stable',
+      regionalInsight: 'Higher latency observed in EU-West.',
+      runtimeBreakdown: {
+        network: '190ms',
+        providerProcessing: '980ms',
+        retrievalOverhead: '360ms',
+        toolOverhead: '140ms',
+      },
+      incidents: ['Elevated retry rate during morning traffic peak.'],
+    },
+  },
+  {
+    id: 'claude-3-haiku',
+    provider: 'Anthropic',
+    model: 'Claude 3 Haiku',
+    avgLatency: '1.0s',
+    p95Latency: '1.8s',
+    timeoutRate: '0.9%',
+    availability: '99.93%',
+    requestThroughput: '4.8k rpm',
+    errorRate: '0.6%',
+    status: 'Healthy',
+    badge: 'Fastest',
+    lowLatencyRecommended: true,
+    sparkline: [27, 26, 27, 28, 29, 27, 26],
+    detail: {
+      avgLatencyTrend: [1.05, 1.03, 1.0, 0.99, 1.0, 1.0, 1.0],
+      p95LatencyTrend: [1.9, 1.85, 1.8, 1.78, 1.8, 1.8, 1.8],
+      retries: '1.4%',
+      failedRequests: '0.4%',
+      streamingStartDelay: '170ms',
+      providerHealth: 'Healthy',
+      regionalInsight: 'Balanced latency in all active geos.',
+      runtimeBreakdown: {
+        network: '150ms',
+        providerProcessing: '520ms',
+        retrievalOverhead: '230ms',
+        toolOverhead: '100ms',
+      },
+      incidents: ['No significant incidents in selected window.'],
+    },
+  },
+  {
+    id: 'gemini-1-5-pro',
+    provider: 'Google',
+    model: 'Gemini 1.5 Pro',
+    avgLatency: '1.9s',
+    p95Latency: '3.2s',
+    timeoutRate: '2.1%',
+    availability: '99.82%',
+    requestThroughput: '2.7k rpm',
+    errorRate: '1.1%',
+    status: 'Stable',
+    badge: 'Watch',
+    sparkline: [42, 43, 44, 46, 45, 47, 46],
+    detail: {
+      avgLatencyTrend: [2.0, 1.98, 1.95, 1.9, 1.92, 1.9, 1.9],
+      p95LatencyTrend: [3.3, 3.25, 3.2, 3.15, 3.18, 3.2, 3.2],
+      retries: '3.1%',
+      failedRequests: '0.9%',
+      streamingStartDelay: '340ms',
+      providerHealth: 'Stable',
+      regionalInsight: 'Latency spikes observed during index refresh windows.',
+      runtimeBreakdown: {
+        network: '200ms',
+        providerProcessing: '1070ms',
+        retrievalOverhead: '430ms',
+        toolOverhead: '160ms',
+      },
+      incidents: ['Latency spike detected in us-central routing cluster.'],
+    },
+  },
+  {
+    id: 'gemini-1-5-flash',
+    provider: 'Google',
+    model: 'Gemini 1.5 Flash',
+    avgLatency: '0.8s',
+    p95Latency: '1.4s',
+    timeoutRate: '0.7%',
+    availability: '99.96%',
+    requestThroughput: '7.2k rpm',
+    errorRate: '0.5%',
+    status: 'Healthy',
+    badge: 'Fastest',
+    lowLatencyRecommended: true,
+    sparkline: [21, 22, 23, 24, 23, 22, 21],
+    detail: {
+      avgLatencyTrend: [0.85, 0.83, 0.82, 0.8, 0.81, 0.8, 0.8],
+      p95LatencyTrend: [1.5, 1.45, 1.42, 1.4, 1.41, 1.4, 1.4],
+      retries: '1.0%',
+      failedRequests: '0.3%',
+      streamingStartDelay: '130ms',
+      providerHealth: 'Healthy',
+      regionalInsight: 'Lowest latency in APAC and EU edge clusters.',
+      runtimeBreakdown: {
+        network: '130ms',
+        providerProcessing: '360ms',
+        retrievalOverhead: '220ms',
+        toolOverhead: '90ms',
+      },
+      incidents: ['Brief timeout increase auto-recovered.'],
+    },
   },
 ]
 
-const topologyNodes24h: TopologyNode[] = [
-  { id: 'users', label: 'Users', layer: 'Users', status: 'Online' },
-  { id: 'agents', label: 'AI Agents', layer: 'AI Agents', status: 'Stable' },
-  {
-    id: 'providers',
-    label: 'Models',
-    layer: 'Models',
-    status: 'Degraded',
-    issue: 'GPT-4o latency elevated',
-  },
-  {
-    id: 'tools',
-    label: 'Tools/APIs',
-    layer: 'Tools/APIs',
-    status: 'Degraded',
-    issue: 'Delivery API timeouts',
-  },
-  {
-    id: 'escalation',
-    label: 'Human Escalation',
-    layer: 'Human Escalation',
-    status: 'Healthy',
-  },
+const retrievalMetrics24h: RetrievalMetric[] = [
+  { label: 'Retrieval Success Rate', value: '98.1%', tone: 'healthy' },
+  { label: 'Avg Retrieval Latency', value: '420ms', tone: 'watch' },
+  { label: 'Retrieval Timeout Rate', value: '1.4%', tone: 'watch' },
+  { label: 'No-Context Returned Rate', value: '3.8%', tone: 'watch' },
+  { label: 'Retrieval Error Rate', value: '0.9%', tone: 'healthy' },
+  { label: 'Vector Search Availability', value: '99.92%', tone: 'healthy' },
+  { label: 'Knowledge Source Sync Status', value: '4/5 Healthy', tone: 'watch' },
+  { label: 'Index Refresh Delay', value: '14m', tone: 'watch' },
+  { label: 'Retrieval Queue Depth', value: '37', tone: 'neutral' },
 ]
 
-const toolDependencies24h = [
-  { name: 'OpenAI', status: 'Degraded' },
-  { name: 'Anthropic', status: 'Stable' },
-  { name: 'Shopify API', status: 'Healthy' },
-  { name: 'Delivery API', status: 'Degraded' },
-  { name: 'Inventory API', status: 'Stable' },
-  { name: 'CRM', status: 'Healthy' },
-  { name: 'Vector DB', status: 'Stable' },
+const knowledgeSources24h: KnowledgeSourceRow[] = [
+  {
+    id: 'help-center',
+    source: 'Help Center',
+    availability: '99.95%',
+    avgLatency: '390ms',
+    timeoutRate: '1.1%',
+    lastSync: '3m ago',
+    status: 'Healthy',
+    trend: [35, 33, 34, 32, 31, 30, 29],
+    detail: {
+      queueDepth: '11',
+      indexDelay: '2m',
+      syncStatus: 'On schedule',
+      vectorAvailability: '99.97%',
+    },
+  },
+  {
+    id: 'product-docs',
+    source: 'Product Docs',
+    availability: '99.90%',
+    avgLatency: '430ms',
+    timeoutRate: '1.5%',
+    lastSync: '14m ago',
+    status: 'Syncing',
+    trend: [30, 32, 34, 35, 37, 39, 38],
+    detail: {
+      queueDepth: '24',
+      indexDelay: '14m',
+      syncStatus: 'Backfill running',
+      vectorAvailability: '99.92%',
+    },
+  },
+  {
+    id: 'billing-policies',
+    source: 'Billing Policies',
+    availability: '99.97%',
+    avgLatency: '360ms',
+    timeoutRate: '0.8%',
+    lastSync: '5m ago',
+    status: 'Healthy',
+    trend: [28, 27, 29, 28, 27, 26, 26],
+    detail: {
+      queueDepth: '9',
+      indexDelay: '1m',
+      syncStatus: 'Healthy',
+      vectorAvailability: '99.99%',
+    },
+  },
+  {
+    id: 'internal-wiki',
+    source: 'Internal Wiki',
+    availability: '99.88%',
+    avgLatency: '470ms',
+    timeoutRate: '1.9%',
+    lastSync: '9m ago',
+    status: 'Degraded',
+    trend: [37, 38, 40, 42, 43, 41, 44],
+    detail: {
+      queueDepth: '29',
+      indexDelay: '9m',
+      syncStatus: 'Partial lag',
+      vectorAvailability: '99.84%',
+    },
+  },
+  {
+    id: 'crm-kb',
+    source: 'CRM Knowledge Base',
+    availability: '99.72%',
+    avgLatency: '560ms',
+    timeoutRate: '3.4%',
+    lastSync: '22m ago',
+    status: 'Degraded',
+    trend: [42, 45, 48, 51, 49, 54, 56],
+    detail: {
+      queueDepth: '41',
+      indexDelay: '22m',
+      syncStatus: 'Connection instability',
+      vectorAvailability: '99.76%',
+    },
+  },
 ]
 
 function withRangeAdjustments(
@@ -468,20 +818,66 @@ function withRangeAdjustments(
 
 function providerRowsByRange(range: TimeRange): ProviderHealth[] {
   if (range === '1h') {
-    return [
-      { id: 'gpt-4o', provider: 'OpenAI', model: 'GPT-4o', currentLatency: '1.9s', availability: '99.88%', requestsPerMin: '4.4k', errorRate: '0.8%', rateLimitUsage: '74%', status: 'Stable', sparkline: [35, 38, 36, 41, 39, 43, 40] },
-      { id: 'claude-sonnet', provider: 'Anthropic', model: 'Claude Sonnet', currentLatency: '1.4s', availability: '99.96%', requestsPerMin: '2.2k', errorRate: '0.4%', rateLimitUsage: '61%', status: 'Healthy', sparkline: [30, 31, 30, 32, 33, 32, 31] },
-      { id: 'gemini-pro', provider: 'Google', model: 'Gemini Pro', currentLatency: '1.7s', availability: '99.92%', requestsPerMin: '1.8k', errorRate: '0.7%', rateLimitUsage: '58%', status: 'Stable', sparkline: [28, 29, 31, 30, 33, 32, 34] },
-      { id: 'embedding', provider: 'Internal', model: 'Embedding Service', currentLatency: '440ms', availability: '99.99%', requestsPerMin: '8.7k', errorRate: '0.2%', rateLimitUsage: '49%', status: 'Healthy', sparkline: [43, 42, 41, 40, 39, 40, 38] },
-    ]
+    return providerHealthRows24h.map((row) => ({
+      ...row,
+      avgLatency:
+        row.id === 'claude-3-opus'
+          ? '2.5s'
+          : row.id === 'gemini-1-5-flash'
+            ? '0.75s'
+            : row.id === 'gpt-4o-mini'
+              ? '0.85s'
+              : row.avgLatency,
+      p95Latency:
+        row.id === 'claude-3-opus'
+          ? '4.2s'
+          : row.id === 'gemini-1-5-flash'
+            ? '1.3s'
+            : row.p95Latency,
+      timeoutRate:
+        row.id === 'claude-3-opus'
+          ? '2.8%'
+          : row.id === 'gemini-1-5-flash'
+            ? '0.6%'
+            : row.timeoutRate,
+      requestThroughput:
+        row.id === 'gpt-4o'
+          ? '7.4k rpm'
+          : row.id === 'claude-3-opus'
+            ? '1.5k rpm'
+            : row.requestThroughput,
+    }))
   }
   if (range === '7d') {
-    return [
-      { id: 'gpt-4o', provider: 'OpenAI', model: 'GPT-4o', currentLatency: '2.0s', availability: '99.90%', requestsPerMin: '7.9k', errorRate: '0.9%', rateLimitUsage: '79%', status: 'Stable', sparkline: [40, 41, 42, 43, 44, 43, 42] },
-      { id: 'claude-sonnet', provider: 'Anthropic', model: 'Claude Sonnet', currentLatency: '1.5s', availability: '99.95%', requestsPerMin: '3.9k', errorRate: '0.5%', rateLimitUsage: '66%', status: 'Stable', sparkline: [33, 33, 34, 34, 35, 35, 36] },
-      { id: 'gemini-pro', provider: 'Google', model: 'Gemini Pro', currentLatency: '1.8s', availability: '99.93%', requestsPerMin: '3.2k', errorRate: '0.7%', rateLimitUsage: '62%', status: 'Stable', sparkline: [31, 31, 32, 33, 33, 34, 35] },
-      { id: 'embedding', provider: 'Internal', model: 'Embedding Service', currentLatency: '460ms', availability: '99.99%', requestsPerMin: '14.8k', errorRate: '0.2%', rateLimitUsage: '57%', status: 'Healthy', sparkline: [44, 44, 43, 43, 42, 42, 41] },
-    ]
+    return providerHealthRows24h.map((row) => ({
+      ...row,
+      avgLatency:
+        row.id === 'claude-3-opus'
+          ? '2.9s'
+          : row.id === 'gpt-4o'
+            ? '1.25s'
+            : row.id === 'gemini-1-5-flash'
+              ? '0.82s'
+              : row.avgLatency,
+      p95Latency:
+        row.id === 'claude-3-opus'
+          ? '4.9s'
+          : row.id === 'gemini-1-5-pro'
+            ? '3.3s'
+            : row.p95Latency,
+      timeoutRate:
+        row.id === 'claude-3-opus'
+          ? '3.4%'
+          : row.id === 'gemini-1-5-pro'
+            ? '2.3%'
+            : row.timeoutRate,
+      requestThroughput:
+        row.id === 'gpt-4o'
+          ? '9.8k rpm'
+          : row.id === 'gemini-1-5-flash'
+            ? '8.4k rpm'
+            : row.requestThroughput,
+    }))
   }
   return providerHealthRows24h
 }
@@ -517,60 +913,90 @@ function fleetMetricsByRange(range: TimeRange): FleetMetric[] {
   ]
 }
 
-function topologyByRange(range: TimeRange): TopologyNode[] {
+function retrievalMetricsByRange(range: TimeRange): RetrievalMetric[] {
   if (range === '1h') {
-    return topologyNodes24h.map((node) =>
-      node.id === 'providers'
-        ? { ...node, status: 'Stable', issue: 'Short GPT-4o jitter' }
-        : node.id === 'tools'
-          ? { ...node, status: 'Degraded', issue: 'Carrier API retries' }
-          : node,
-    )
+    return [
+      { label: 'Retrieval Success Rate', value: '98.6%', tone: 'healthy' },
+      { label: 'Avg Retrieval Latency', value: '390ms', tone: 'healthy' },
+      { label: 'Retrieval Timeout Rate', value: '1.1%', tone: 'healthy' },
+      { label: 'No-Context Returned Rate', value: '3.4%', tone: 'watch' },
+      { label: 'Retrieval Error Rate', value: '0.7%', tone: 'healthy' },
+      { label: 'Vector Search Availability', value: '99.95%', tone: 'healthy' },
+      { label: 'Knowledge Source Sync Status', value: '5/5 Healthy', tone: 'healthy' },
+      { label: 'Index Refresh Delay', value: '6m', tone: 'healthy' },
+      { label: 'Retrieval Queue Depth', value: '23', tone: 'neutral' },
+    ]
   }
   if (range === '7d') {
-    return topologyNodes24h.map((node) =>
-      node.id === 'providers'
-        ? { ...node, status: 'Stable', issue: 'No sustained provider issues' }
-        : node.id === 'tools'
-          ? { ...node, status: 'Stable', issue: 'Occasional delivery timeouts' }
-          : node,
-    )
+    return [
+      { label: 'Retrieval Success Rate', value: '98.3%', tone: 'healthy' },
+      { label: 'Avg Retrieval Latency', value: '440ms', tone: 'watch' },
+      { label: 'Retrieval Timeout Rate', value: '1.6%', tone: 'watch' },
+      { label: 'No-Context Returned Rate', value: '3.9%', tone: 'watch' },
+      { label: 'Retrieval Error Rate', value: '1.0%', tone: 'watch' },
+      { label: 'Vector Search Availability', value: '99.90%', tone: 'healthy' },
+      { label: 'Knowledge Source Sync Status', value: '4/5 Healthy', tone: 'watch' },
+      { label: 'Index Refresh Delay', value: '18m', tone: 'watch' },
+      { label: 'Retrieval Queue Depth', value: '46', tone: 'neutral' },
+    ]
   }
-  return topologyNodes24h
+  return retrievalMetrics24h
 }
 
-function toolsByRange(range: TimeRange) {
+function knowledgeSourcesByRange(range: TimeRange): KnowledgeSourceRow[] {
   if (range === '1h') {
-    return [
-      { name: 'OpenAI', status: 'Stable' },
-      { name: 'Anthropic', status: 'Healthy' },
-      { name: 'Shopify API', status: 'Healthy' },
-      { name: 'Delivery API', status: 'Degraded' },
-      { name: 'Inventory API', status: 'Stable' },
-      { name: 'CRM', status: 'Healthy' },
-      { name: 'Vector DB', status: 'Stable' },
-    ]
+    return knowledgeSources24h.map((source) => ({
+      ...source,
+      avgLatency:
+        source.id === 'crm-kb'
+          ? '510ms'
+          : source.id === 'product-docs'
+            ? '405ms'
+            : source.avgLatency,
+      timeoutRate:
+        source.id === 'crm-kb'
+          ? '2.6%'
+          : source.id === 'internal-wiki'
+            ? '1.5%'
+            : source.timeoutRate,
+      lastSync: source.id === 'crm-kb' ? '12m ago' : source.lastSync,
+      detail: {
+        ...source.detail,
+        queueDepth: source.id === 'crm-kb' ? '32' : source.detail.queueDepth,
+      },
+    }))
   }
   if (range === '7d') {
-    return [
-      { name: 'OpenAI', status: 'Stable' },
-      { name: 'Anthropic', status: 'Stable' },
-      { name: 'Shopify API', status: 'Healthy' },
-      { name: 'Delivery API', status: 'Stable' },
-      { name: 'Inventory API', status: 'Stable' },
-      { name: 'CRM', status: 'Healthy' },
-      { name: 'Vector DB', status: 'Healthy' },
-    ]
+    return knowledgeSources24h.map((source) => ({
+      ...source,
+      avgLatency:
+        source.id === 'crm-kb'
+          ? '590ms'
+          : source.id === 'internal-wiki'
+            ? '490ms'
+            : source.avgLatency,
+      timeoutRate:
+        source.id === 'crm-kb'
+          ? '3.8%'
+          : source.id === 'product-docs'
+            ? '1.8%'
+            : source.timeoutRate,
+      lastSync: source.id === 'product-docs' ? '18m ago' : source.lastSync,
+      detail: {
+        ...source.detail,
+        indexDelay: source.id === 'product-docs' ? '18m' : source.detail.indexDelay,
+      },
+    }))
   }
-  return toolDependencies24h
+  return knowledgeSources24h
 }
 
 export type OperationalHealthSnapshot = {
   fleetMetrics: FleetMetric[]
   fleetRows: AgentOperationalRow[]
   providerHealthRows: ProviderHealth[]
-  topologyNodes: TopologyNode[]
-  toolDependencies: { name: string; status: string }[]
+  retrievalMetrics: RetrievalMetric[]
+  knowledgeSources: KnowledgeSourceRow[]
 }
 
 export const operationalHealthData: Record<TimeRange, OperationalHealthSnapshot> = {
@@ -578,21 +1004,21 @@ export const operationalHealthData: Record<TimeRange, OperationalHealthSnapshot>
     fleetMetrics: fleetMetricsByRange('1h'),
     fleetRows: withRangeAdjustments(fleetRows24h, '1h'),
     providerHealthRows: providerRowsByRange('1h'),
-    topologyNodes: topologyByRange('1h'),
-    toolDependencies: toolsByRange('1h'),
+    retrievalMetrics: retrievalMetricsByRange('1h'),
+    knowledgeSources: knowledgeSourcesByRange('1h'),
   },
   '24h': {
     fleetMetrics: fleetMetricsByRange('24h'),
     fleetRows: withRangeAdjustments(fleetRows24h, '24h'),
     providerHealthRows: providerRowsByRange('24h'),
-    topologyNodes: topologyByRange('24h'),
-    toolDependencies: toolsByRange('24h'),
+    retrievalMetrics: retrievalMetricsByRange('24h'),
+    knowledgeSources: knowledgeSourcesByRange('24h'),
   },
   '7d': {
     fleetMetrics: fleetMetricsByRange('7d'),
     fleetRows: withRangeAdjustments(fleetRows24h, '7d'),
     providerHealthRows: providerRowsByRange('7d'),
-    topologyNodes: topologyByRange('7d'),
-    toolDependencies: toolsByRange('7d'),
+    retrievalMetrics: retrievalMetricsByRange('7d'),
+    knowledgeSources: knowledgeSourcesByRange('7d'),
   },
 }

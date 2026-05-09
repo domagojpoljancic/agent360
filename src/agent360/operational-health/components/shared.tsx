@@ -4,23 +4,30 @@ import type { AgentStatus } from '../data'
 export function Sparkline({
   points,
   danger = false,
+  className,
 }: {
   points: number[]
   danger?: boolean
+  className?: string
 }) {
   const min = Math.min(...points)
   const max = Math.max(...points)
+  const padY = 8
+  const chartHeight = 100 - padY * 2
   const normalized = points.map((value, index) => {
     const x = (index / (points.length - 1 || 1)) * 100
-    const y = max === min ? 50 : 100 - ((value - min) / (max - min)) * 100
+    const y =
+      max === min
+        ? 50
+        : 100 - padY - ((value - min) / (max - min)) * chartHeight
     return `${x},${y}`
   })
   return (
-    <svg viewBox="0 0 100 100" className="h-8 w-full">
+    <svg viewBox="0 0 100 100" className={className ?? 'h-7 w-full'} preserveAspectRatio="none">
       <polyline
         fill="none"
         stroke={danger ? '#E07a83' : '#3694fc'}
-        strokeWidth="5"
+        strokeWidth="3"
         strokeLinecap="round"
         strokeLinejoin="round"
         points={normalized.join(' ')}

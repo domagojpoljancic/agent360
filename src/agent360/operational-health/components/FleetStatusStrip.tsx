@@ -1,11 +1,9 @@
-import { Activity, RefreshCw } from 'lucide-react'
-import { StatusBadge } from '../../components/StatusBadge'
+import { Activity } from 'lucide-react'
 import type { FleetMetric } from '../data'
 import { Sparkline } from './shared'
 
 type FleetStatusStripProps = {
   metrics: FleetMetric[]
-  isRefreshing: boolean
 }
 
 function trendClass(trend: FleetMetric['trend']): string {
@@ -14,19 +12,14 @@ function trendClass(trend: FleetMetric['trend']): string {
   return 'text-[#f2f0eb]/50'
 }
 
-export function FleetStatusStrip({ metrics, isRefreshing }: FleetStatusStripProps) {
+export function FleetStatusStrip({ metrics }: FleetStatusStripProps) {
   return (
     <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3 md:p-4">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex items-center">
         <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[#f2f0eb]/45">
           <Activity className="size-3.5 text-[#3694fc]" />
           Fleet Status Strip
         </div>
-        <StatusBadge
-          label={isRefreshing ? 'Refreshing stream' : 'Auto-refresh active'}
-          tone="live"
-          icon={<RefreshCw className={`size-3 ${isRefreshing ? 'animate-spin' : ''}`} />}
-        />
       </div>
       <div className="grid gap-2.5 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
         {metrics.map((metric) => (
@@ -41,8 +34,12 @@ export function FleetStatusStrip({ metrics, isRefreshing }: FleetStatusStripProp
               </span>
             </div>
             <p className="text-[24px] font-semibold leading-none text-[#f2f0eb]">{metric.value}</p>
-            <div className="mt-2 rounded-md border border-white/[0.06] bg-white/[0.02] px-2 py-1">
-              <Sparkline points={metric.sparkline} danger={metric.tone === 'critical'} />
+            <div className="mt-2 rounded-md border border-white/[0.06] bg-white/[0.02] px-1 py-0.5">
+              <Sparkline
+                points={metric.sparkline}
+                danger={metric.tone === 'critical'}
+                className="h-6 w-full"
+              />
             </div>
           </article>
         ))}

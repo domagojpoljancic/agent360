@@ -19,15 +19,15 @@ export function NotFoundPage() {
               That view isn't on the map yet.
             </h1>
             <p className="mt-3 text-[14px] text-[#f2f0eb]/65">
-              Head back home and pick a 360° view to enter the Agent360 operating model.
+              Head to the operating view and pick a 360° dimension to explore.
             </p>
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/overview')}
               className="mt-6 inline-flex items-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-4 py-2.5 text-sm font-medium text-[#f2f0eb] transition hover:border-white/[0.18]"
             >
               <ArrowLeft className="size-3.5" />
-              Back to Agent360 Home
+              Back to Operating View
             </button>
           </div>
         </main>

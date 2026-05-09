@@ -29,11 +29,11 @@ export function PlaceholderPage({ view }: PlaceholderPageProps) {
         <main className="mx-auto max-w-7xl px-4 pb-20 pt-8 md:px-6">
           <button
             type="button"
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/overview')}
             className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.02] px-3 py-1.5 text-[12px] text-[#f2f0eb]/75 transition hover:border-white/[0.18] hover:text-[#f2f0eb]"
           >
             <ArrowLeft className="size-3.5" />
-            Back to Agent360 Home
+            Back to Operating View
           </button>
 
           <header className="relative overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.02] p-7 md:p-9">
@@ -174,11 +174,11 @@ export function PlaceholderPage({ view }: PlaceholderPageProps) {
 
               <button
                 type="button"
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/overview')}
                 className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-white/[0.08] bg-white/[0.02] px-3 py-2.5 text-sm text-[#f2f0eb] transition hover:border-white/[0.18]"
               >
                 <ArrowLeft className="size-3.5" />
-                Back to Agent360 Home
+                Back to Operating View
               </button>
             </aside>
           </section>

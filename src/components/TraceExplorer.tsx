@@ -1,6 +1,8 @@
-import { Fragment } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import type { TraceRow } from '../data/mockData'
 import { StatusBadge } from './StatusBadge'
+import { SortableHeader } from './SortableHeader'
+import { nextSortState, sortRows, type SortState } from '../utils/tableSorting'
 
 type TraceExplorerProps = {
   traces: TraceRow[]
@@ -16,6 +18,27 @@ const statusTone = {
 } as const
 
 export function TraceExplorer({ traces, selectedTraceId, onSelectTrace }: TraceExplorerProps) {
+  type SortKey = 'timestamp' | 'agent' | 'intent' | 'latency' | 'model' | 'status' | 'cost' | 'id'
+  const [sortConfig, setSortConfig] = useState<SortState<SortKey>>({
+    key: 'timestamp',
+    direction: 'desc',
+  })
+  const sortedTraces = useMemo(
+    () => sortRows(traces, sortConfig, (trace, key) => trace[key]),
+    [traces, sortConfig],
+  )
+
+  const headers: { label: string; key: SortKey }[] = [
+    { label: 'Timestamp', key: 'timestamp' },
+    { label: 'Agent', key: 'agent' },
+    { label: 'User Intent', key: 'intent' },
+    { label: 'Latency', key: 'latency' },
+    { label: 'Model', key: 'model' },
+    { label: 'Status', key: 'status' },
+    { label: 'Cost', key: 'cost' },
+    { label: 'Trace ID', key: 'id' },
+  ]
+
   if (!traces.length) {
     return (
       <section className="rounded-2xl border border-slate-700/60 bg-slate-900/45 p-5 text-center text-sm text-slate-300">
@@ -34,18 +57,20 @@ export function TraceExplorer({ traces, selectedTraceId, onSelectTrace }: TraceE
         <table className="min-w-full text-left text-xs">
           <thead>
             <tr className="border-b border-slate-700 text-slate-400">
-              <th className="pb-2 font-medium">Timestamp</th>
-              <th className="pb-2 font-medium">Agent</th>
-              <th className="pb-2 font-medium">User Intent</th>
-              <th className="pb-2 font-medium">Latency</th>
-              <th className="pb-2 font-medium">Model</th>
-              <th className="pb-2 font-medium">Status</th>
-              <th className="pb-2 font-medium">Cost</th>
-              <th className="pb-2 font-medium">Trace ID</th>
+              {headers.map((header) => (
+                <th key={header.key} className="pb-2 font-medium">
+                  <SortableHeader
+                    label={header.label}
+                    active={sortConfig.key === header.key}
+                    direction={sortConfig.key === header.key ? sortConfig.direction : null}
+                    onClick={() => setSortConfig((current) => nextSortState(current, header.key))}
+                  />
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody>
-            {traces.map((trace) => {
+            {sortedTraces.map((trace) => {
               const isSelected = trace.id === selectedTraceId
               return (
                 <Fragment key={trace.id}>

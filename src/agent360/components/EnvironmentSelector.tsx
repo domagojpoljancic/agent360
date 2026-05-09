@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react'
-import { Check, ChevronDown } from 'lucide-react'
+import { Check, ChevronDown, FlaskConical, Radio, Wrench } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 type Environment = {
   id: string
   label: string
   hint: string
+  icon: LucideIcon
 }
 
 const environments: Environment[] = [
-  { id: 'production', label: 'Production', hint: 'Live · primary region' },
-  { id: 'staging', label: 'Staging', hint: 'Pre-prod · canary builds' },
-  { id: 'sandbox', label: 'Sandbox', hint: 'Internal experiments' },
+  { id: 'production', label: 'Production', hint: 'Live · primary region', icon: Radio },
+  { id: 'staging', label: 'Staging', hint: 'Pre-prod · canary builds', icon: Wrench },
+  { id: 'sandbox', label: 'Sandbox', hint: 'Internal experiments', icon: FlaskConical },
 ]
 
 export function EnvironmentSelector() {
@@ -36,6 +38,9 @@ export function EnvironmentSelector() {
     }
   }, [open])
 
+  const SelectedIcon = selected.icon
+  const isProd = selected.id === 'production'
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -49,10 +54,11 @@ export function EnvironmentSelector() {
             : 'border-white/[0.08] bg-white/[0.02] text-[#f2f0eb] hover:border-white/[0.18] hover:bg-white/[0.05]'
         }`}
       >
-        <span className="relative inline-flex size-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#3DD68C] opacity-60" />
-          <span className="relative inline-flex size-2 rounded-full bg-[#3DD68C]" />
-        </span>
+        <SelectedIcon
+          className={`size-3.5 transition ${
+            isProd ? 'text-[#3694fc]' : 'text-[#f2f0eb]/65'
+          }`}
+        />
         <span>{selected.label}</span>
         <ChevronDown
           className={`size-3 text-[#f2f0eb]/55 transition ${open ? 'rotate-180' : ''}`}
@@ -69,6 +75,7 @@ export function EnvironmentSelector() {
           </p>
           {environments.map((env) => {
             const isSelected = env.id === selected.id
+            const EnvIcon = env.icon
             return (
               <button
                 key={env.id}
@@ -85,9 +92,16 @@ export function EnvironmentSelector() {
                     : 'text-[#f2f0eb]/85 hover:bg-white/[0.04]'
                 }`}
               >
-                <span className="flex flex-col leading-tight">
-                  <span className="font-medium">{env.label}</span>
-                  <span className="text-[11px] text-[#f2f0eb]/45">{env.hint}</span>
+                <span className="flex items-center gap-2.5 leading-tight">
+                  <EnvIcon
+                    className={`size-3.5 ${
+                      isSelected ? 'text-[#3694fc]' : 'text-[#f2f0eb]/55'
+                    }`}
+                  />
+                  <span className="flex flex-col">
+                    <span className="font-medium">{env.label}</span>
+                    <span className="text-[11px] text-[#f2f0eb]/45">{env.hint}</span>
+                  </span>
                 </span>
                 {isSelected ? <Check className="size-3.5 text-[#3694fc]" /> : null}
               </button>

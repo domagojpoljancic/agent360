@@ -60,6 +60,10 @@ export type AgentView = {
   shortTitle: string
   question: string
   description: string
+  /** Short, hover-friendly description used by the orbit info panel. */
+  hoverDescription: string
+  /** Concrete example insight used by the orbit info panel. */
+  exampleInsight: string
   accent: AccentTone
   icon: LucideIcon
   status: ViewStatus
@@ -167,6 +171,9 @@ export const views: AgentView[] = [
     question: 'Is the agent stable and reliable?',
     description:
       'Monitor latency, errors, timeouts, tool failures, model availability, and infrastructure signals before they affect users.',
+    hoverDescription:
+      'Monitor latency, reliability, incidents, and provider health.',
+    exampleInsight: '2 agents on watch · uptime 99.94%',
     accent: 'cyan',
     icon: HeartPulse,
     status: { label: 'All systems nominal', tone: 'healthy' },
@@ -215,14 +222,17 @@ export const views: AgentView[] = [
     shortTitle: 'Trust',
     question: 'Is the agent doing the job well enough to earn user confidence?',
     description:
-      'Understand answer quality, groundedness, relevance, task success, hallucination risk, human corrections, and user trust signals.',
+      'Understand answer quality, groundedness, relevance, task success, retry/clarification behavior, escalation patterns, and fleet-wide trust signals.',
+    hoverDescription:
+      'Understand groundedness, task success, and user trust behavior across customer and internal agents.',
+    exampleInsight: '91% trusted answers · 9.1% retry/clarify loops',
     accent: 'violet',
     icon: ShieldCheck,
     status: { label: 'Quality steady', tone: 'success' },
     stats: [
-      { label: 'Trusted answers', value: '89%', trend: 'up', positive: true },
-      { label: 'Task success', value: '84%', trend: 'up', positive: true },
-      { label: 'Human corrections', value: '6.2%', trend: 'down', positive: true },
+      { label: 'Trusted answers', value: '91%', trend: 'up', positive: true },
+      { label: 'Task success', value: '87%', trend: 'up', positive: true },
+      { label: 'Retry / clarify', value: '9.1%', trend: 'down', positive: true },
     ],
     comingNext:
       'A trust layer for AI — quality scoring, hallucination detection, and human-in-the-loop signals.',
@@ -249,11 +259,11 @@ export const views: AgentView[] = [
         metric: { label: 'Risk', value: 'Low' },
       },
       {
-        title: 'Human Correction Signals',
-        description: 'Where reviewers step in and what they fix.',
+        title: 'Retry & clarification',
+        description: 'Rephrases, clarification loops, and restated intent after AI replies.',
         icon: Wand2,
         badge: 'Active',
-        metric: { label: 'Corrections', value: '6.2%' },
+        metric: { label: 'Loop rate', value: '9.1%' },
       },
     ],
   },
@@ -265,6 +275,9 @@ export const views: AgentView[] = [
     question: 'Is the agent creating measurable business value?',
     description:
       'Track time saved, workload reduced, tickets avoided, customer experience improvements, productivity gains, and revenue influence.',
+    hoverDescription:
+      'Track business impact, workload reduction, and measurable AI value.',
+    exampleInsight: '1,240h saved · €42.7k value tracked',
     accent: 'emerald',
     icon: TrendingUp,
     status: { label: 'On target', tone: 'success' },
@@ -314,6 +327,9 @@ export const views: AgentView[] = [
     question: 'Are we using the right models and resources for the value created?',
     description:
       'Connect AI spend to outcomes, identify premium model overuse, compare cost per successful task, and recommend smarter model routing.',
+    hoverDescription:
+      'Connect AI spend to outcomes and surface routing opportunities.',
+    exampleInsight: '€9.4k savings open · 18% optimised',
     accent: 'amber',
     icon: Sliders,
     status: { label: 'Savings available', tone: 'watch' },
@@ -361,25 +377,31 @@ export function getViewByPath(path: string): AgentView | undefined {
   return views.find((view) => view.path === path)
 }
 
+export function getViewByKey(key: ViewKey): AgentView {
+  const view = views.find((v) => v.key === key)
+  if (!view) throw new Error(`Unknown view key: ${key}`)
+  return view
+}
+
 export const teams = [
   {
     title: 'Engineering',
-    line: 'Monitor reliability, failures, latency, and tool performance.',
+    line: 'Detect reliability issues before they impact users.',
     icon: Zap,
   },
   {
     title: 'Product & AI Teams',
-    line: 'Understand quality, trust, task success, and improvement opportunities.',
+    line: 'Understand which agents succeed, fail, and why.',
     icon: BrainCircuit,
   },
   {
     title: 'Operations',
-    line: 'Track workload reduction, escalations, and handoff patterns.',
+    line: 'See where AI reduces workload or requires human escalation.',
     icon: Globe2,
   },
   {
     title: 'Leadership & Finance',
-    line: 'Connect AI performance to value delivered and cost optimization.',
+    line: 'Connect AI investment to measurable business value.',
     icon: DollarSign,
   },
 ]

@@ -74,13 +74,86 @@ body {
   100% { transform: translateX(100%); opacity: 0; }
 }
 
+@keyframes agent360-modal-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);     }
+}
+
+@keyframes agent360-ripple {
+  0%   { transform: scale(0.92); opacity: 0.55; }
+  100% { transform: scale(1.18); opacity: 0;    }
+}
+
+@keyframes agent360-orbit-drift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -4px, 0); }
+}
+
+@keyframes agent360-aura {
+  0%, 100% { opacity: 0.55; transform: scale(1);    }
+  50%      { opacity: 1;    transform: scale(1.04); }
+}
+
+/* Cinematic vision → operational launch transition.
+   Driven by toggling `.is-launching` on `.a360-vision-root`. */
+.a360-vision-content {
+  transition:
+    transform 480ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity   480ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter    480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.a360-vision-ambient {
+  transition: opacity 480ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.a360-vision-flash {
+  background: radial-gradient(
+    ellipse 60% 55% at 50% 70%,
+    rgba(125, 182, 254, 0.55),
+    rgba(54, 148, 252, 0.35) 35%,
+    rgba(20, 28, 55, 0.92) 70%,
+    #15151c 100%
+  );
+  opacity: 0;
+  transition: opacity 480ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.a360-vision-root.is-launching .a360-vision-content {
+  transform: scale(1.035);
+  opacity: 0;
+  filter: blur(7px);
+}
+
+.a360-vision-root.is-launching .a360-vision-ambient {
+  opacity: 0.4;
+}
+
+.a360-vision-root.is-launching .a360-vision-flash {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .a360-rotate-slow,
   .a360-rotate-rev,
   .a360-pulse,
   .a360-bar,
-  .a360-sweep {
+  .a360-sweep,
+  .a360-modal-in,
+  .a360-fade-up,
+  .a360-ripple,
+  .a360-drift,
+  .a360-aura {
     animation: none !important;
+  }
+  .a360-vision-content,
+  .a360-vision-ambient,
+  .a360-vision-flash {
+    transition: opacity 200ms linear !important;
+  }
+  .a360-vision-root.is-launching .a360-vision-content {
+    transform: none;
+    filter: none;
   }
   html {
     scroll-behavior: auto;
@@ -96,6 +169,15 @@ body {
 .a360-sweep {
   animation: agent360-sweep 2.6s ease-in-out infinite;
   will-change: transform, opacity;
+}
+
+.a360-modal-in {
+  animation: agent360-modal-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+  will-change: transform, opacity;
+}
+
+.a360-fade-up {
+  animation: agent360-fade-up 0.45s ease-out both;
 }
 
 .a360-rotate-slow {
@@ -114,4 +196,19 @@ body {
 
 .a360-fade-up {
   animation: agent360-fade-up 0.55s ease-out both;
+}
+
+.a360-ripple {
+  animation: agent360-ripple 1.6s ease-out infinite;
+  will-change: transform, opacity;
+}
+
+.a360-drift {
+  animation: agent360-orbit-drift 9s ease-in-out infinite;
+  will-change: transform;
+}
+
+.a360-aura {
+  animation: agent360-aura 5.6s ease-in-out infinite;
+  will-change: transform, opacity;
 }
