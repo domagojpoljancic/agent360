@@ -202,7 +202,7 @@ export const TRUST_METRIC_EXPLAINS: Record<string, MetricExplainContent> = {
   'section-conversation-trust': {
     title: 'Conversation trust',
     definition: 'Incident-style rows: real threads with outcome, trust impact, and human signal.',
-    why: 'Makes trust tangible for reviews and exec reviews.',
+    why: 'Makes trust tangible for exec reviews and cross-team readouts.',
     measured:
       'Curated examples from production traffic with PII scrubbed and packaged for governance review.',
     ops: 'Sort by status and trust impact to build the weekly narrative.',

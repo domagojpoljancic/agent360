@@ -21,7 +21,7 @@ export function CostDeepDivePlaceholderPage() {
             <p className="text-[10px] uppercase tracking-[0.22em] text-[#f2f0eb]/45">Prototype</p>
             <h1 className="mt-2 text-2xl font-semibold text-[#f2f0eb]">Cost deep dive</h1>
             <p className="mt-3 text-sm leading-relaxed text-[#f2f0eb]/65">
-              This full-page drill-down is a placeholder for the walkthrough. In a production build it would surface
+              This full-page drill-down is not built out in this preview. A complete experience would surface
               token-level forensics, routing experiment history, and finance exports — without turning Agent360 into a
               raw billing console.
             </p>

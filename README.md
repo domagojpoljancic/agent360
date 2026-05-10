@@ -85,6 +85,6 @@ Other scripts (when useful):
 
 There is no `npm test` script in this repo.
 
-## Repository note
+## Data note
 
-This project is intentionally a **walkthrough / review prototype**: data and narratives are **fabricated for demonstration** and should not be interpreted as a real customer deployment or production telemetry.
+Metrics, reviews, and narratives in this repo are **illustrative** for product storytelling. They do not represent a specific customer deployment or live production telemetry.
