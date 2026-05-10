@@ -1,6 +1,7 @@
 import { ArrowLeft, ArrowRight, Construction } from 'lucide-react'
 import { accentClasses, type AgentView } from '../data/views'
 import { navigate } from '../router'
+import { Agent360Footer } from './Agent360Footer'
 import { GridBackground } from './GridBackground'
 import { Header } from './Header'
 import { StatusBadge, type BadgeTone } from './StatusBadge'
@@ -21,12 +22,12 @@ export function PlaceholderPage({ view }: PlaceholderPageProps) {
   const Icon = view.icon
 
   return (
-    <div className="relative min-h-screen text-[#f2f0eb]">
+    <div className="relative flex min-h-screen flex-col text-[#f2f0eb]">
       <GridBackground variant="page" />
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col">
         <Header />
 
-        <main className="mx-auto max-w-7xl px-4 pb-20 pt-8 md:px-6">
+        <main className="mx-auto max-w-7xl flex-1 px-4 pb-12 pt-8 md:px-6 md:pb-14">
           <button
             type="button"
             onClick={() => navigate('/overview')}
@@ -183,6 +184,8 @@ export function PlaceholderPage({ view }: PlaceholderPageProps) {
             </aside>
           </section>
         </main>
+
+        <Agent360Footer />
       </div>
     </div>
   )

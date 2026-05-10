@@ -94,43 +94,134 @@ body {
   50%      { opacity: 1;    transform: scale(1.04); }
 }
 
-/* Cinematic vision → operational launch transition.
-   Driven by toggling `.is-launching` on `.a360-vision-root`. */
+/* Dashed connector lines `flowing` outward — used by VisionSphere's center→
+   orbit data streams. Animating stroke-dashoffset only is GPU-friendly. */
+@keyframes agent360-line-flow {
+  from { stroke-dashoffset: 0;   }
+  to   { stroke-dashoffset: -24; }
+}
+
+/* === Cinematic vision → operational launch transition ===
+   Choreographed in 3 phases:
+     1. CTA click flips `.is-launching` on `.a360-vision-root`.
+     2. Vision content scales/blurs/fades, sphere accelerates, bloom expands.
+     3. OperationalPage mounts with matching bloom + emerge animation
+        (see `.a360-emerge-*` below) so the bloom appears continuous across
+        the route change.
+   Timing: vision exit ~600ms, navigation handoff at 600ms, operational
+   emerge ~600ms — total perceived motion ~1.2s. */
+
 .a360-vision-content {
   transition:
-    transform 480ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity   480ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter    480ms cubic-bezier(0.22, 1, 0.36, 1);
+    transform 600ms cubic-bezier(0.4, 0, 0.4, 1),
+    opacity   600ms cubic-bezier(0.4, 0, 0.4, 1),
+    filter    600ms cubic-bezier(0.4, 0, 0.4, 1);
 }
 
 .a360-vision-ambient {
-  transition: opacity 480ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition:
+    opacity 600ms cubic-bezier(0.4, 0, 0.4, 1),
+    filter  600ms cubic-bezier(0.4, 0, 0.4, 1);
 }
 
+/* The bloom expands radially from the sphere center as the system "activates",
+   peaking exactly at navigation time so the operational page can pick it up. */
 .a360-vision-flash {
   background: radial-gradient(
-    ellipse 60% 55% at 50% 70%,
-    rgba(125, 182, 254, 0.55),
-    rgba(54, 148, 252, 0.35) 35%,
-    rgba(20, 28, 55, 0.92) 70%,
-    #15151c 100%
+    circle at 50% 50%,
+    rgba(125, 182, 254, 0.55) 0%,
+    rgba(54, 148, 252, 0.40) 18%,
+    rgba(20, 28, 55, 0.85) 48%,
+    rgba(15, 18, 28, 1) 75%
   );
   opacity: 0;
-  transition: opacity 480ms cubic-bezier(0.4, 0, 0.2, 1);
+  transform: scale(0.4);
+  transform-origin: 50% 50%;
+  transition:
+    opacity 600ms cubic-bezier(0.4, 0, 0.4, 1),
+    transform 600ms cubic-bezier(0.4, 0, 0.4, 1);
+  will-change: opacity, transform;
 }
 
 .a360-vision-root.is-launching .a360-vision-content {
-  transform: scale(1.035);
+  transform: scale(1.06);
   opacity: 0;
-  filter: blur(7px);
+  filter: blur(8px);
 }
 
 .a360-vision-root.is-launching .a360-vision-ambient {
-  opacity: 0.4;
+  opacity: 0.55;
+  filter: brightness(1.15) saturate(1.1);
 }
 
 .a360-vision-root.is-launching .a360-vision-flash {
   opacity: 1;
+  transform: scale(1.6);
+}
+
+/* Sphere "activation" — orbital rings, sweep, line-flow, and pulses all
+   accelerate during launch so the system feels like it's powering up.
+   `!important` overrides the per-element inline `animationDuration`. */
+.a360-vision-root.is-launching .a360-rotate-slow {
+  animation-duration: 6s !important;
+}
+.a360-vision-root.is-launching .a360-rotate-rev {
+  animation-duration: 7s !important;
+}
+.a360-vision-root.is-launching .a360-pulse {
+  animation-duration: 1.2s !important;
+}
+.a360-vision-root.is-launching .a360-aura {
+  animation-duration: 1.4s !important;
+}
+.a360-vision-root.is-launching .a360-line-flow line {
+  animation-duration: 1.2s !important;
+}
+.a360-vision-root.is-launching .a360-vision-sphere-sweep {
+  animation-duration: 3.5s !important;
+}
+
+/* === Operational page emergence ===
+   When OperationalPage mounts after a vision launch (detected via
+   sessionStorage), it renders a bloom overlay at the same visual state the
+   vision flash ended at, then dissipates while the page content scales up
+   and un-blurs into place. */
+@keyframes agent360-emerge {
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes agent360-bloom-fade {
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+.a360-emerge-content {
+  opacity: 0;
+  transform: scale(0.97);
+  filter: blur(6px);
+  animation: agent360-emerge 600ms cubic-bezier(0.22, 1, 0.36, 1) 60ms forwards;
+  will-change: transform, opacity, filter;
+}
+
+.a360-emerge-bloom {
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(125, 182, 254, 0.55) 0%,
+    rgba(54, 148, 252, 0.40) 18%,
+    rgba(20, 28, 55, 0.85) 48%,
+    rgba(15, 18, 28, 1) 75%
+  );
+  transform-origin: 50% 50%;
+  opacity: 1;
+  transform: scale(1.6);
+  animation: agent360-bloom-fade 700ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -143,7 +234,9 @@ body {
   .a360-fade-up,
   .a360-ripple,
   .a360-drift,
-  .a360-aura {
+  .a360-aura,
+  .a360-line-flow line,
+  .a360-vision-sphere-sweep {
     animation: none !important;
   }
   .a360-vision-content,
@@ -154,6 +247,21 @@ body {
   .a360-vision-root.is-launching .a360-vision-content {
     transform: none;
     filter: none;
+  }
+  .a360-vision-root.is-launching .a360-vision-flash {
+    transform: none;
+  }
+  /* Reduced-motion: skip the cinematic emerge entirely — content shows
+     immediately, bloom is hidden. Preserves intent without animation. */
+  .a360-emerge-content {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+  }
+  .a360-emerge-bloom {
+    animation: none !important;
+    opacity: 0 !important;
   }
   html {
     scroll-behavior: auto;
@@ -211,4 +319,209 @@ body {
 .a360-aura {
   animation: agent360-aura 5.6s ease-in-out infinite;
   will-change: transform, opacity;
+}
+
+/* VisionSphere connector lines — dashed strokes flowing outward from the
+   core. Applied on a parent <g>, so all child <line>s share a flow rhythm. */
+.a360-line-flow line {
+  animation: agent360-line-flow 4.5s linear infinite;
+  fill: none;
+}
+
+/* VisionSphere conic-gradient radar sweep. Sits over the SVG sphere as a
+   blended ring of light, rotating slowly. The radial mask limits the sweep
+   to a ring zone so the center core stays clean and the outer halo soft. */
+.a360-vision-sphere-sweep {
+  position: absolute;
+  inset: 6%;
+  border-radius: 9999px;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(54, 148, 252, 0)    0deg,
+    rgba(54, 148, 252, 0)    240deg,
+    rgba(54, 148, 252, 0.06) 320deg,
+    rgba(125, 182, 254, 0.22) 358deg,
+    rgba(125, 182, 254, 0.28) 360deg
+  );
+  -webkit-mask: radial-gradient(
+    circle at center,
+    transparent 36%,
+    rgba(0, 0, 0, 0.85) 44%,
+    rgba(0, 0, 0, 0.85) 58%,
+    transparent 72%
+  );
+  mask: radial-gradient(
+    circle at center,
+    transparent 36%,
+    rgba(0, 0, 0, 0.85) 44%,
+    rgba(0, 0, 0, 0.85) 58%,
+    transparent 72%
+  );
+  mix-blend-mode: screen;
+  pointer-events: none;
+  animation: agent360-spin-slow 16s linear infinite;
+  will-change: transform;
+}
+
+/* === Header dropdown: contained main-view transition (below navbar) === */
+@keyframes agent360-page-tx-shade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes agent360-page-tx-shade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes agent360-page-tx-card-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes agent360-page-tx-card-out {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.98) translateY(-4px);
+  }
+}
+
+@keyframes agent360-page-tx-card-ring {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes agent360-page-tx-card-orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes agent360-page-tx-card-dot {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes agent360-page-route-enter {
+  from {
+    opacity: 0.88;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.a360-page-tx-shade {
+  background: rgba(6, 8, 14, 0.52);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+.a360-page-tx-shade--enter {
+  animation: agent360-page-tx-shade-in 180ms ease-out both;
+}
+
+.a360-page-tx-shade--leave {
+  animation: agent360-page-tx-shade-out 280ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.a360-page-tx-card--enter {
+  animation: agent360-page-tx-card-in 220ms cubic-bezier(0.22, 1, 0.36, 1) 40ms both;
+}
+
+.a360-page-tx-card--leave {
+  animation: agent360-page-tx-card-out 260ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.a360-page-tx-card-ring {
+  animation: agent360-page-tx-card-ring 1.35s linear infinite;
+}
+
+.a360-page-tx-card-orbit {
+  animation: agent360-page-tx-card-orbit 5.5s linear infinite;
+}
+
+.a360-page-tx-card-dot {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 4px;
+  height: 4px;
+  margin-top: 1px;
+  border-radius: 9999px;
+  background: rgba(125, 182, 254, 0.95);
+  box-shadow: 0 0 8px rgba(54, 148, 252, 0.75);
+  transform: translateX(-50%);
+  animation: agent360-page-tx-card-dot 1.4s ease-in-out infinite;
+}
+
+html.a360-page-route-enter #root {
+  animation: agent360-page-route-enter 280ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a360-page-tx-shade--enter,
+  .a360-page-tx-shade--leave,
+  .a360-page-tx-card--enter,
+  .a360-page-tx-card--leave,
+  .a360-page-tx-card-ring,
+  .a360-page-tx-card-orbit,
+  .a360-page-tx-card-dot,
+  html.a360-page-route-enter #root {
+    animation: none !important;
+  }
+}
+
+/* Header: compact page view switcher menu */
+@keyframes agent360-page-switcher-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-3px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.a360-page-switcher-menu {
+  animation: agent360-page-switcher-menu-in 165ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .a360-page-switcher-menu {
+    animation: none !important;
+  }
 }

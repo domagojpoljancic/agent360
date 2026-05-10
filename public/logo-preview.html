@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Agent360 — Logo preview</title>
+  <style>
+    :root {
+      --bg: #12121a;
+      --panel: #1a1a22;
+      --border: rgba(242, 240, 235, 0.08);
+      --muted: rgba(242, 240, 235, 0.55);
+      --accent: #3694fc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: #f2f0eb;
+      line-height: 1.5;
+      padding: 32px 24px 48px;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 8px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 0.9rem;
+      max-width: 52rem;
+      margin-bottom: 28px;
+    }
+    .grid {
+      display: grid;
+      gap: 20px;
+      max-width: 1100px;
+    }
+    @media (min-width: 720px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 20px 16px;
+    }
+    .card h2 {
+      margin: 0 0 14px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--muted);
+    }
+    .stage {
+      border-radius: 8px;
+      min-height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .stage.dark {
+      background: linear-gradient(145deg, #1a1a22 0%, #14141a 100%);
+      border: 1px solid rgba(54, 148, 252, 0.12);
+    }
+    .stage.checker {
+      background-color: #1a1a22;
+      background-image:
+        linear-gradient(45deg, #24242e 25%, transparent 25%),
+        linear-gradient(-45deg, #24242e 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #24242e 75%),
+        linear-gradient(-45deg, transparent 75%, #24242e 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+      border: 1px solid var(--border);
+    }
+    .stage.slide {
+      min-height: 200px;
+      padding: 24px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 24px;
+    }
+    .note {
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    code {
+      font-size: 0.78em;
+      background: rgba(54, 148, 252, 0.12);
+      color: #9ec8ff;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .nav-demo {
+      width: 100%;
+      max-width: 420px;
+      height: 48px;
+      border-radius: 8px;
+      background: rgba(26, 26, 34, 0.95);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 14px;
+      gap: 10px;
+    }
+    .favicon-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 20px;
+    }
+    .favicon-row figcaption {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 6px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Agent360 logo preview</h1>
+  <p class="sub">
+    Variations for decks and prototypes. Files live in <code>/public/</code>.
+    Wordmark uses system UI fonts for editable SVG; for pixel-perfect decks, convert text to outlines in your design tool after import.
+  </p>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Horizontal — dark canvas</h2>
+      <div class="stage dark">
+        <img src="./agent360-logo.svg" alt="Agent360 horizontal" width="260" height="54"/>
+      </div>
+      <p class="note"><code>agent360-logo.svg</code> — transparent; use on dark UI.</p>
+    </div>
+
+    <div class="card">
+      <h2>Horizontal — transparent check</h2>
+      <div class="stage checker">
+        <img src="./agent360-logo.svg" alt="Agent360 horizontal" width="260" height="54"/>
+      </div>
+      <p class="note">Confirms alpha around the mark and wordmark.</p>
+    </div>
+
+    <div class="card">
+      <h2>Icon only</h2>
+      <div class="stage dark">
+        <img src="./agent360-logo-icon.svg" alt="Agent360 icon" width="72" height="72"/>
+      </div>
+      <p class="note"><code>agent360-logo-icon.svg</code> — favicon, app chrome, watermarks.</p>
+    </div>
+
+    <div class="card">
+      <h2>Navbar scale</h2>
+      <div class="stage dark">
+        <div class="nav-demo">
+          <img src="./agent360-logo-icon.svg" alt="" width="26" height="26"/>
+          <img src="./agent360-logo.svg" alt="Agent360" height="22" style="width: auto; max-height: 22px;"/>
+        </div>
+      </div>
+      <p class="note">~26px icon + compact wordmark height matches app header density.</p>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2>Slide / hero — large</h2>
+      <div class="stage dark slide">
+        <img src="./agent360-logo-slide.svg" alt="Agent360 slide" width="100%" style="max-width: 640px; height: auto;"/>
+      </div>
+      <p class="note"><code>agent360-logo-slide.svg</code> — title slide, chapter dividers, large prototype hero.</p>
+    </div>
+
+    <div class="card">
+      <h2>Dark plate (export card)</h2>
+      <div class="stage" style="background: #0e0e14; padding: 24px;">
+        <img src="./agent360-logo-on-dark.svg" alt="Agent360 on dark plate" width="300" height="68"/>
+      </div>
+      <p class="note"><code>agent360-logo-on-dark.svg</code> — embedded graphite background + border for social or slide badges.</p>
+    </div>
+
+    <div class="card">
+      <h2>Favicon scale</h2>
+      <div class="stage dark">
+        <div class="favicon-row">
+          <figure>
+            <img src="./agent360-logo-icon.svg" alt="" width="32" height="32"/>
+            <figcaption>32</figcaption>
+          </figure>
+          <figure>
+            <img src="./agent360-logo-icon.svg" alt="" width="24" height="24"/>
+            <figcaption>24</figcaption>
+          </figure>
+          <figure>
+            <img src="./agent360-logo-icon.svg" alt="" width="16" height="16"/>
+            <figcaption>16</figcaption>
+          </figure>
+        </div>
+      </div>
+      <p class="note">Icon-only; pair with <code>public/favicon.svg</code> if you replace site favicon.</p>
+    </div>
+  </div>
+</body>
+</html>

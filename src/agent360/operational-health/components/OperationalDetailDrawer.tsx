@@ -8,6 +8,8 @@ type OperationalDetailDrawerProps = {
   subtitle?: string
   meta?: ReactNode
   children: ReactNode
+  /** Override default `max-w` / `min-w` for wider drilldowns (e.g. API endpoint matrix). */
+  asideWidthClassName?: string
 }
 
 export function OperationalDetailDrawer({
@@ -17,6 +19,7 @@ export function OperationalDetailDrawer({
   subtitle,
   meta,
   children,
+  asideWidthClassName = 'max-w-[min(46vw,720px)] min-w-[340px]',
 }: OperationalDetailDrawerProps) {
   useEffect(() => {
     if (!open) return
@@ -38,7 +41,7 @@ export function OperationalDetailDrawer({
         className={`absolute inset-0 bg-[#0d0d12]/55 backdrop-blur-[2px] transition ${open ? 'opacity-100' : 'opacity-0'}`}
       />
       <aside
-        className={`absolute right-0 top-0 h-full w-full max-w-[min(46vw,720px)] min-w-[340px] overflow-auto border-l border-white/[0.08] bg-[#171720]/95 p-4 backdrop-blur-xl transition duration-250 md:p-5 ${
+        className={`absolute right-0 top-0 h-full w-full overflow-auto border-l border-white/[0.08] bg-[#171720]/95 p-4 backdrop-blur-xl transition duration-250 md:p-5 ${asideWidthClassName} ${
           open ? 'translate-x-0' : 'translate-x-full'
         }`}
       >

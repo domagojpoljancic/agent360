@@ -1,15 +1,16 @@
 import { ArrowLeft, Compass } from 'lucide-react'
+import { Agent360Footer } from '../components/Agent360Footer'
 import { GridBackground } from '../components/GridBackground'
 import { Header } from '../components/Header'
 import { navigate } from '../router'
 
 export function NotFoundPage() {
   return (
-    <div className="relative min-h-screen text-[#f2f0eb]">
+    <div className="relative flex min-h-screen flex-col text-[#f2f0eb]">
       <GridBackground variant="page" />
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col">
         <Header />
-        <main className="mx-auto grid max-w-2xl place-items-center px-4 py-24 md:px-6">
+        <main className="mx-auto grid min-h-0 max-w-2xl flex-1 place-items-center px-4 py-24 md:px-6">
           <div className="w-full rounded-2xl border border-white/[0.07] bg-white/[0.02] p-9 text-center">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#3694fc]/25 bg-[#3694fc]/[0.08] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-[#3694fc]">
               <Compass className="size-3" />
@@ -31,6 +32,8 @@ export function NotFoundPage() {
             </button>
           </div>
         </main>
+
+        <Agent360Footer />
       </div>
     </div>
   )

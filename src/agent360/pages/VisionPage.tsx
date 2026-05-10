@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
+import { Agent360Footer } from '../components/Agent360Footer'
 import { GridBackground } from '../components/GridBackground'
 import { TeamCard } from '../components/TeamCard'
 import { VisionHero } from '../components/VisionHero'
+import { VisionSphere } from '../components/VisionSphere'
 import { teams } from '../data/views'
 import { navigate } from '../router'
 
-const LAUNCH_DURATION_MS = 480
+// Navigation handoff happens at the peak of the bloom transition so the
+// OperationalPage can pick up at the same visual state — see the
+// `.a360-emerge-bloom` rule in index.css for the matching exit animation.
+const LAUNCH_DURATION_MS = 600
+const LAUNCH_FLAG_KEY = 'agent360.launching'
 
 export function VisionPage() {
   const [launching, setLaunching] = useState(false)
@@ -19,70 +25,59 @@ export function VisionPage() {
 
   function handleLaunch() {
     if (launching) return
+    // Drop a single-shot flag the operational page reads on mount to
+    // continue the bloom — survives the route change, consumed once.
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem(LAUNCH_FLAG_KEY, String(Date.now()))
+    }
     setLaunching(true)
   }
 
   return (
     <div
-      className={`a360-vision-root relative min-h-screen overflow-x-clip text-[#f2f0eb] ${
+      className={`a360-vision-root relative flex min-h-screen flex-col overflow-x-clip text-[#f2f0eb] ${
         launching ? 'is-launching' : ''
       }`}
     >
       <GridBackground />
 
-      {/* Ambient atmosphere — slow rotating orbit + soft glows.
-          Sits behind everything but above the grid, fades on launch. */}
+      {/* Ambient atmosphere — cinematic decorative 360° sphere behind the
+          hero. Fades during the launch transition via .a360-vision-ambient.
+          Sphere is purely decorative (aria-hidden, pointer-events-none). */}
       <div
         aria-hidden
         className="a360-vision-ambient pointer-events-none fixed inset-0 z-[1] overflow-hidden"
       >
-        <div className="absolute left-1/2 top-[48%] h-[640px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#3694fc]/[0.08] blur-3xl" />
-        <div className="absolute left-1/2 top-[40%] -translate-x-1/2 -translate-y-1/2">
-          <svg
-            viewBox="0 0 800 800"
-            className="a360-rotate-slow"
-            style={{ width: 'min(110vw, 1200px)', height: 'min(110vw, 1200px)', animationDuration: '90s' }}
-          >
-            <circle
-              cx="400"
-              cy="400"
-              r="380"
-              fill="none"
-              stroke="rgba(54,148,252,0.07)"
-              strokeWidth="0.8"
-              strokeDasharray="2 9"
-            />
-            <circle
-              cx="400"
-              cy="400"
-              r="290"
-              fill="none"
-              stroke="rgba(54,148,252,0.06)"
-              strokeWidth="0.8"
-              strokeDasharray="2 9"
-            />
-            <circle
-              cx="400"
-              cy="400"
-              r="200"
-              fill="none"
-              stroke="rgba(54,148,252,0.05)"
-              strokeWidth="0.8"
-              strokeDasharray="2 9"
-            />
-          </svg>
-        </div>
+        <VisionSphere
+          className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2"
+          style={{
+            width: 'min(120vw, 1280px)',
+            height: 'min(120vw, 1280px)',
+          }}
+        />
+
+        {/* Soft text-stage vignette — gently darkens the region behind the
+            hero copy so the moving sphere atmosphere never reduces contrast
+            on the headline / subhead. Sits over the sphere, under content. */}
+        <div
+          aria-hidden
+          className="absolute inset-0"
+          style={{
+            background:
+              'radial-gradient(ellipse 58% 42% at 50% 46%, rgba(15,17,24,0.30), transparent 64%)',
+          }}
+        />
       </div>
 
       {/* Launch flash — radial bloom that covers the screen at end of transition. */}
       <div aria-hidden className="a360-vision-flash pointer-events-none fixed inset-0 z-[55]" />
 
       {/* Page content (the part that scales, blurs, and fades on launch) */}
-      <div className="a360-vision-content relative z-10">
-        <main className="mx-auto max-w-[1440px] px-4 md:px-6">
+      <div className="a360-vision-content relative z-10 flex flex-1 flex-col">
+        <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 md:px-6">
           {/* Section 1 — Hero */}
           <section className="flex min-h-[78vh] flex-col items-center justify-center pt-20 pb-20 md:pt-28 md:pb-28">
-            <VisionHero onLaunch={handleLaunch} disabled={launching} />
+            <VisionHero onLaunch={handleLaunch} launching={launching} />
           </section>
 
           {/* Section 2 — Built for every team */}
@@ -114,11 +109,7 @@ export function VisionPage() {
           </section>
         </main>
 
-        <footer className="border-t border-white/[0.05] px-4 py-5 md:px-6">
-          <div className="mx-auto flex max-w-[1440px] items-center justify-between text-[11px] text-[#f2f0eb]/40">
-            <p>Agent360 · Operating view for AI agents</p>
-          </div>
-        </footer>
+        <Agent360Footer />
       </div>
     </div>
   )

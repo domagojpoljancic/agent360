@@ -65,13 +65,33 @@ export const valueDeliveredBoardSummary: BoardSummarySections = {
   ],
   needsAttention: [
     'Product Q&A reduced pre-purchase friction, but compatibility and category context gaps still create avoidable contacts.',
-    'Inventory Agent impact remains concentrated in only a few operating regions despite broader exception volume.',
+    'Inventory & Fulfillment Agent impact remains concentrated in only a few operating regions despite broader exception volume.',
     'Mobile product discovery underperforms desktop conversion and leaves assisted revenue influence on the table.',
   ],
   nextActions: [
     'Expand Support Copilot adoption across all support teams and make it the default case workspace.',
     'Improve mobile product discovery journeys for Shopping Concierge.',
-    'Scale Inventory Agent rollout to additional markets and strengthen category attribute completeness for Product Q&A.',
+    'Scale Inventory & Fulfillment Agent rollout to additional markets and strengthen category attribute completeness for Product Q&A.',
+  ],
+}
+
+export const costOptimizationBoardSummary: BoardSummarySections = {
+  verdict:
+    'Spend is broadly under control, but routing and tier choice are the main levers: a few agents still lean on premium models for work that tolerates cheaper tiers, and that gap shows up as predictable savings without sacrificing quality on low-risk flows.',
+  performingWell: [
+    'Most agents stay within expected token and request budgets for their primary intents.',
+    'Model mix is diversified; failover paths are not driving sustained overages.',
+    'High-value workflows that justify premium models are identifiable and stable.',
+  ],
+  needsAttention: [
+    'Premium-tier usage is elevated on intents where evals suggest safe down-tier candidates.',
+    'Some agents show higher cost per successful task than fleet peers on similar complexity.',
+    'Burst traffic periods correlate with temporary scale-up spend that could be smoothed with caching or batching.',
+  ],
+  nextActions: [
+    'Route low-complexity intents to approved lower-cost models where quality gates pass.',
+    'Tighten routing rules for the top three cost-outlier agent × intent pairs.',
+    'Re-run savings scenarios after the next catalog or prompt change and track realized vs projected savings.',
   ],
 }
 

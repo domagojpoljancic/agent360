@@ -3,10 +3,14 @@ import { OperationalHealthAgentPage } from './agent360/pages/OperationalHealthAg
 import { OperationalHealthPage } from './agent360/pages/OperationalHealthPage'
 import { AgentEffectivenessTrustPage } from './agent360/pages/AgentEffectivenessTrustPage'
 import { ValueDeliveredPage } from './agent360/pages/ValueDeliveredPage'
+import { CostOptimizationPage } from './agent360/pages/CostOptimizationPage'
+import { CostDeepDivePlaceholderPage } from './agent360/pages/CostDeepDivePlaceholderPage'
 import { OperationalPage } from './agent360/pages/OperationalPage'
 import { VisionPage } from './agent360/pages/VisionPage'
+import { CustomerFeedbackPage } from './agent360/pages/CustomerFeedbackPage'
 import { ModelComparisonPage } from './agent360/pages/ModelComparisonPage'
 import { RetrievalComparisonPage } from './agent360/pages/RetrievalComparisonPage'
+import { ApiOverviewPage } from './agent360/pages/ApiOverviewPage'
 import { PlaceholderPage } from './agent360/components/PlaceholderPage'
 import { getViewByPath } from './agent360/data/views'
 import { useRoute } from './agent360/router'
@@ -29,16 +33,24 @@ function App() {
     return <LegacyDashboard />
   }
 
-  if (route === '/operational-health') {
-    return <OperationalHealthPage />
+  if (route === '/value-delivered') {
+    return <ValueDeliveredPage />
+  }
+
+  if (route === '/cost-optimization') {
+    return <CostOptimizationPage />
   }
 
   if (route === '/agent-effectiveness-trust') {
     return <AgentEffectivenessTrustPage />
   }
 
-  if (route === '/value-delivered') {
-    return <ValueDeliveredPage />
+  if (route === '/operational-health') {
+    return <OperationalHealthPage />
+  }
+
+  if (route === '/cost-optimization/deep-dive') {
+    return <CostDeepDivePlaceholderPage />
   }
 
   if (route === '/model-comparison') {
@@ -47,6 +59,18 @@ function App() {
 
   if (route === '/retrieval-comparison') {
     return <RetrievalComparisonPage />
+  }
+
+  if (route === '/api-overview') {
+    return <ApiOverviewPage />
+  }
+
+  if (route === '/api-comparison') {
+    return <ApiOverviewPage />
+  }
+
+  if (route === '/customer-feedback') {
+    return <CustomerFeedbackPage />
   }
 
   if (route.startsWith('/operational-health/agent/')) {

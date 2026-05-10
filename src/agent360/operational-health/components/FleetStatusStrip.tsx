@@ -1,9 +1,11 @@
 import { Activity } from 'lucide-react'
+import type { PageTheme } from '../../data/pageThemes'
 import type { FleetMetric } from '../data'
 import { Sparkline } from './shared'
 
 type FleetStatusStripProps = {
   metrics: FleetMetric[]
+  theme: PageTheme
 }
 
 function trendClass(trend: FleetMetric['trend']): string {
@@ -12,12 +14,17 @@ function trendClass(trend: FleetMetric['trend']): string {
   return 'text-[#f2f0eb]/50'
 }
 
-export function FleetStatusStrip({ metrics }: FleetStatusStripProps) {
+export function FleetStatusStrip({ metrics, theme }: FleetStatusStripProps) {
   return (
-    <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3 md:p-4">
+    <section className={`relative isolate overflow-hidden ${theme.kpiStripSection}`}>
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+        <div className={theme.kpiStripAura} />
+        <div className={theme.kpiStripAuraSecondary} />
+        <div className={theme.kpiStripTopLine} />
+      </div>
       <div className="mb-3 flex items-center">
         <div className="inline-flex items-center gap-2 text-[11px] uppercase tracking-[0.2em] text-[#f2f0eb]/45">
-          <Activity className="size-3.5 text-[#3694fc]" />
+          <Activity className={`size-3.5 ${theme.kpiStripLabel}`} />
           Fleet Status Strip
         </div>
       </div>
@@ -25,7 +32,7 @@ export function FleetStatusStrip({ metrics }: FleetStatusStripProps) {
         {metrics.map((metric) => (
           <article
             key={metric.label}
-            className="group rounded-xl border border-white/[0.07] bg-[#20202a]/70 p-3.5 transition hover:border-[#3694fc]/35 hover:shadow-[0_16px_40px_-30px_rgba(54,148,252,0.8)]"
+            className={`group rounded-xl border border-white/[0.07] bg-[#20202a]/70 p-3.5 transition ${theme.kpiCardHoverBorder} ${theme.kpiCardHoverShadow}`}
           >
             <div className="mb-1.5 flex items-start justify-between gap-2">
               <p className="text-[11px] font-medium text-[#f2f0eb]/72">{metric.label}</p>

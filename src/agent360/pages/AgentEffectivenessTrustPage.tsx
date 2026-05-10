@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Activity, Clock3, RefreshCw } from 'lucide-react'
+import { Agent360Footer } from '../components/Agent360Footer'
 import { GridBackground } from '../components/GridBackground'
 import { Header } from '../components/Header'
 import { StatusBadge } from '../components/StatusBadge'
@@ -9,6 +10,7 @@ import type { TimeRange } from '../operational-health/data'
 import { TrustOverviewStrip } from '../agent-effectiveness-trust/components/TrustOverviewStrip'
 import { FleetTrustMatrix } from '../agent-effectiveness-trust/components/FleetTrustMatrix'
 import { TrustSignalsSection } from '../agent-effectiveness-trust/components/TrustSignalsSection'
+import { PromptPerformanceSection } from '../agent-effectiveness-trust/components/PromptPerformanceSection'
 import { ConversationExplorer } from '../agent-effectiveness-trust/components/ConversationExplorer'
 import { TrustTrendsAdoption } from '../agent-effectiveness-trust/components/TrustTrendsAdoption'
 import { InvestigationDrawer } from '../agent-effectiveness-trust/components/InvestigationDrawer'
@@ -20,6 +22,9 @@ import {
   agentEffectivenessTrustBoardSummary,
   boardSummarySubtitle,
 } from '../data/boardSummary'
+import { getPageTheme } from '../data/pageThemes'
+
+const pageTheme = getPageTheme('agent-effectiveness-trust')
 
 type DrawerTarget =
   | { type: 'agent'; id: string }
@@ -150,12 +155,15 @@ export function AgentEffectivenessTrustPage() {
   }
 
   return (
-    <div className="relative min-h-screen text-[#f2f0eb]">
-      <GridBackground variant="page" />
-      <div className="relative z-10">
+    <div className="relative flex min-h-screen flex-col text-[#f2f0eb]">
+      <GridBackground variant="page" pageAccent="agent-effectiveness-trust" />
+      <div className="relative z-10 flex flex-1 flex-col">
         <Header />
-        <main className="mx-auto max-w-7xl space-y-4 px-4 pb-20 pt-8 md:px-6">
-          <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 md:p-5">
+        <main className="mx-auto max-w-7xl flex-1 space-y-4 px-4 pb-12 pt-8 md:px-6 md:pb-14">
+          <section className={pageTheme.heroSection}>
+            <div aria-hidden className={pageTheme.heroTopLine} />
+            <div aria-hidden className={pageTheme.heroGlowRight} />
+            <div aria-hidden className={pageTheme.heroGlowLeft} />
             <div className="flex items-start justify-between gap-4 md:gap-6">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[#f2f0eb]/45">
@@ -166,6 +174,10 @@ export function AgentEffectivenessTrustPage() {
                 </h1>
                 <p className="mt-1 text-sm text-[#f2f0eb]/62">
                   Operational trust: who relies on agents, where humans step in, and where confidence breaks.
+                </p>
+                <p className="mt-2 max-w-3xl text-[11px] leading-relaxed text-[#f2f0eb]/48">
+                  <span className="text-[#f2f0eb]/55">Time range:</span> 1h, 24h, and 7d for behavior and handoff patterns.
+                  Value Delivered uses longer windows (through 30d) for outcome-level impact.
                 </p>
               </div>
 
@@ -184,11 +196,7 @@ export function AgentEffectivenessTrustPage() {
                   <Clock3 className="size-3.5 shrink-0" />
                   Updated {updatedAt}
                 </span>
-                <button
-                  type="button"
-                  onClick={onRefresh}
-                  className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-md border border-[#3694fc]/35 bg-[#3694fc]/10 px-2 py-1 text-[12px] text-[#f2f0eb] transition hover:border-[#3694fc]/70 md:px-2.5"
-                >
+                <button type="button" onClick={onRefresh} className={pageTheme.refreshButton}>
                   <RefreshCw className={`size-3.5 shrink-0 ${isRefreshing ? 'animate-spin' : ''}`} />
                   Refresh
                 </button>
@@ -203,7 +211,7 @@ export function AgentEffectivenessTrustPage() {
                     onClick={() => setTimeRange(item)}
                     className={`rounded-md px-3 py-1 text-[11px] font-medium transition ${
                       timeRange === item
-                        ? 'bg-[#9aa6f0]/20 text-[#f2f0eb]'
+                        ? pageTheme.timeRangeActive
                         : 'text-[#f2f0eb]/55 hover:text-[#f2f0eb]'
                     }`}
                   >
@@ -219,7 +227,7 @@ export function AgentEffectivenessTrustPage() {
             </div>
           </section>
 
-          <TrustOverviewStrip metrics={snapshot.overview} />
+          <TrustOverviewStrip metrics={snapshot.overview} theme={pageTheme} />
           <FleetTrustMatrix
             rows={snapshot.matrixRows}
             selectedAgentId={drawerTarget.type === 'agent' ? drawerTarget.id : null}
@@ -243,7 +251,10 @@ export function AgentEffectivenessTrustPage() {
             }}
           />
           <TrustTrendsAdoption series={snapshot.trends} />
+          <PromptPerformanceSection data={snapshot.promptPerformance} />
         </main>
+
+        <Agent360Footer />
       </div>
 
       <InvestigationDrawer

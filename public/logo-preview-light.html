@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Agent360 — Logo on light backgrounds</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+      background: #f4f4f6;
+      color: #17171f;
+      padding: 32px 24px 48px;
+      line-height: 1.5;
+    }
+    h1 { font-size: 1.35rem; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+    .sub { color: #5c5c6b; font-size: 0.9rem; max-width: 52rem; margin-bottom: 24px; }
+    .grid { display: grid; gap: 18px; max-width: 1100px; }
+    @media (min-width: 760px) { .grid { grid-template-columns: 1fr 1fr; } }
+    .card {
+      background: #fff;
+      border: 1px solid rgba(23, 23, 31, 0.08);
+      border-radius: 12px;
+      padding: 18px 18px 14px;
+      box-shadow: 0 1px 2px rgba(23, 23, 31, 0.04);
+    }
+    .card h2 {
+      margin: 0 0 12px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: #6b6b78;
+    }
+    .stage {
+      border-radius: 8px;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: #fff;
+    }
+    .stage.gray { background: #ececf0; }
+    .stage.title {
+      min-height: 220px;
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+      text-align: left;
+      padding: 28px;
+    }
+    .fake-title { font-size: 1.5rem; font-weight: 600; color: #17171f; margin: 0; }
+    .fake-sub { margin: 0; color: #5c5c6b; font-size: 0.95rem; }
+    .row { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; }
+    .note { margin-top: 10px; font-size: 0.78rem; color: #6b6b78; }
+    code {
+      font-size: 0.78em;
+      background: rgba(27, 106, 232, 0.08);
+      color: #1b6ae8;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .footer-demo {
+      width: 100%;
+      max-width: 520px;
+      border-top: 1px solid rgba(23, 23, 31, 0.1);
+      padding: 12px 4px 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: #6b6b78;
+    }
+    .favicon-row { display: flex; align-items: flex-end; gap: 18px; }
+    .favicon-row figcaption { font-size: 0.7rem; color: #6b6b78; margin-top: 6px; text-align: center; }
+  </style>
+</head>
+<body>
+  <h1>Agent360 — presentation (light) assets</h1>
+  <p class="sub">
+    PNGs are transparent; optimized for white/light decks. Regenerate with <code>npm run export:agent360-logos</code>.
+    Sources: <code>scripts/agent360-png-export/sources/*.svg</code>.
+  </p>
+
+  <div class="grid">
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2>Title slide (2048px wide)</h2>
+      <div class="stage title gray">
+        <img src="./agent360-logo-light-bg.png" alt="Agent360 title" style="max-width: min(560px, 100%); height: auto;"/>
+        <p class="fake-title">Operating AI agents at enterprise scale</p>
+        <p class="fake-sub">Confidential · walkthrough</p>
+      </div>
+      <p class="note"><code>agent360-logo-light-bg.png</code> — icon, wordmark, tagline.</p>
+    </div>
+
+    <div class="card">
+      <h2>Horizontal — corner / header</h2>
+      <div class="stage">
+        <img src="./agent360-horizontal-light-bg.png" alt="Agent360 horizontal" width="280" height="auto"/>
+      </div>
+      <p class="note"><code>agent360-horizontal-light-bg.png</code></p>
+    </div>
+
+    <div class="card">
+      <h2>Outline — busy white templates</h2>
+      <div class="stage gray">
+        <img src="./agent360-logo-outline.png" alt="Agent360 outline" width="300" height="auto"/>
+      </div>
+      <p class="note"><code>agent360-logo-outline.png</code> — soft edge + subtle text stroke.</p>
+    </div>
+
+    <div class="card">
+      <h2>Icon only</h2>
+      <div class="stage">
+        <img src="./agent360-icon-light-bg.png" alt="Agent360 icon" width="72" height="72"/>
+      </div>
+      <p class="note"><code>agent360-icon-light-bg.png</code> (use 1024/512 variants when downsizing).</p>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2>Footer strip</h2>
+      <div class="stage">
+        <div style="width: 100%; max-width: 560px;">
+          <div class="footer-demo">
+            <span>Agenda</span>
+            <img src="./agent360-horizontal-light-bg-1024.png" alt="" height="20" style="width: auto; opacity: 0.92;"/>
+          </div>
+        </div>
+      </div>
+      <p class="note">Downscale from <code>-1024</code> or <code>-512</code> files for crisp small UI.</p>
+    </div>
+
+    <div class="card">
+      <h2>Favicon scale</h2>
+      <div class="stage gray">
+        <div class="favicon-row">
+          <figure>
+            <img src="./agent360-icon-transparent-512.png" alt="" width="32" height="32"/>
+            <figcaption>32</figcaption>
+          </figure>
+          <figure>
+            <img src="./agent360-icon-transparent-512.png" alt="" width="24" height="24"/>
+            <figcaption>24</figcaption>
+          </figure>
+          <figure>
+            <img src="./agent360-icon-transparent-512.png" alt="" width="16" height="16"/>
+            <figcaption>16</figcaption>
+          </figure>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Transparent naming</h2>
+      <div class="stage row">
+        <img src="./agent360-logo-transparent.png" alt="" height="28" style="width: auto;"/>
+      </div>
+      <p class="note"><code>agent360-logo-transparent.png</code> matches the horizontal lockup (same pixels as <code>agent360-horizontal-light-bg.png</code>).</p>
+    </div>
+  </div>
+</body>
+</html>

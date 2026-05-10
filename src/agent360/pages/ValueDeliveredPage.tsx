@@ -4,6 +4,7 @@ import { AISummaryButton } from '../components/AISummaryButton'
 import { AISummaryContent } from '../components/AISummaryContent'
 import { AISummaryDrawer } from '../components/AISummaryDrawer'
 import { AISummaryLoadingState } from '../components/AISummaryLoadingState'
+import { Agent360Footer } from '../components/Agent360Footer'
 import { GridBackground } from '../components/GridBackground'
 import { Header } from '../components/Header'
 import { EnvironmentSelector } from '../components/EnvironmentSelector'
@@ -25,6 +26,9 @@ import {
   boardSummarySubtitle,
   valueDeliveredBoardSummary,
 } from '../data/boardSummary'
+import { getPageTheme } from '../data/pageThemes'
+
+const pageTheme = getPageTheme('value-delivered')
 
 export function ValueDeliveredPage() {
   const [timeRange, setTimeRange] = useState<ValueTimeRange>('30d')
@@ -69,13 +73,15 @@ export function ValueDeliveredPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-x-clip text-[#f2f0eb]">
-      <GridBackground variant="page" />
-      <div className="relative z-10">
+    <div className="relative flex min-h-screen flex-col overflow-x-clip text-[#f2f0eb]">
+      <GridBackground variant="page" pageAccent="value-delivered" />
+      <div className="relative z-10 flex flex-1 flex-col">
         <Header />
-        <main className="mx-auto max-w-7xl space-y-4 px-4 pb-20 pt-8 md:px-6">
-          <section className="relative isolate overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 md:p-5">
-            <div aria-hidden className="pointer-events-none absolute right-8 top-0 -z-10 h-48 w-64 rounded-full bg-[#5DC2A8]/[0.10] blur-3xl" />
+        <main className="mx-auto max-w-7xl flex-1 space-y-4 px-4 pb-12 pt-8 md:px-6 md:pb-14">
+          <section className={pageTheme.heroSection}>
+            <div aria-hidden className={pageTheme.heroTopLine} />
+            <div aria-hidden className={pageTheme.heroGlowRight} />
+            <div aria-hidden className={pageTheme.heroGlowLeft} />
             <div className="flex items-start justify-between gap-4 md:gap-6">
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[#f2f0eb]/45">
@@ -86,6 +92,10 @@ export function ValueDeliveredPage() {
                 </h1>
                 <p className="mt-2 max-w-3xl text-sm leading-relaxed text-[#f2f0eb]/64">
                   Measure how AI agents improve operations, customer experience, and business outcomes across the organization.
+                </p>
+                <p className="mt-2 max-w-3xl text-[11px] leading-relaxed text-[#f2f0eb]/48">
+                  <span className="text-[#f2f0eb]/55">Time range:</span> 24h, 7d, and 30d for outcomes and impact trends.
+                  Cost, trust, and operational boards use shorter 1h–7d slices for live spend, quality, and reliability.
                 </p>
               </div>
 
@@ -106,7 +116,7 @@ export function ValueDeliveredPage() {
                 <button
                   type="button"
                   onClick={onRefresh}
-                  className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-md border border-[#5DC2A8]/35 bg-[#5DC2A8]/10 px-2.5 py-1.5 text-[12px] text-[#f2f0eb] transition hover:border-[#5DC2A8]/70 hover:bg-[#5DC2A8]/15"
+                  className={pageTheme.refreshButton}
                 >
                   <RefreshCw className={`size-3.5 shrink-0 ${isRefreshing ? 'animate-spin' : ''}`} />
                   Refresh
@@ -122,7 +132,7 @@ export function ValueDeliveredPage() {
                     onClick={() => setTimeRange(item)}
                     className={`rounded-md px-3 py-1 text-[11px] font-medium transition ${
                       timeRange === item
-                        ? 'bg-[#5DC2A8]/20 text-[#f2f0eb]'
+                        ? pageTheme.timeRangeActive
                         : 'text-[#f2f0eb]/55 hover:text-[#f2f0eb]'
                     }`}
                   >
@@ -138,7 +148,7 @@ export function ValueDeliveredPage() {
             </div>
           </section>
 
-          <BusinessImpactStrip metrics={snapshot.overview} />
+          <BusinessImpactStrip metrics={snapshot.overview} theme={pageTheme} />
 
           <FleetValueMatrix
             rows={snapshot.matrixRows}
@@ -156,6 +166,8 @@ export function ValueDeliveredPage() {
             {({ onSubmit }) => <ValueAssistantSurface onSubmit={onSubmit} />}
           </ExperimentalAssistant>
         </main>
+
+        <Agent360Footer />
       </div>
 
       <ValueInvestigationDrawer

@@ -90,10 +90,33 @@ export type TrustInvestigation = {
   relatedTrends: TrustTrendSeries[]
 }
 
+/** Prompt observability: outcomes by deployed template version (illustrative scenario). */
+export type PromptPerformanceTrend = {
+  bucketLabels: string[]
+  successRates: number[]
+  escalationRates: number[]
+  retryClarificationRates: number[]
+  activeVersion: string[]
+}
+
+export type PromptVersionRow = {
+  version: string
+  success: string
+  retries: string
+  escalations: string
+  avgTokens: string
+}
+
+export type PromptPerformanceBlock = {
+  trend: PromptPerformanceTrend
+  versionRows: PromptVersionRow[]
+}
+
 export type TrustSnapshot = {
   overview: TrustOverviewMetric[]
   matrixRows: FleetTrustRow[]
   trustSignals: TrustSignalCard[]
+  promptPerformance: PromptPerformanceBlock
   conversations: ConversationTrustRow[]
   trends: TrustTrendSeries[]
 }
@@ -234,6 +257,20 @@ const trustSnapshots: Record<TimeRange, TrustSnapshot> = {
         insightLine: 'Catalog sync window—watch compatibility intents.',
       },
     ],
+    promptPerformance: {
+      trend: {
+        bucketLabels: ['-35m', '-30m', '-25m', '-20m', '-15m', '-10m', '-5m'],
+        successRates: [81, 82, 82, 84, 86, 85, 84],
+        escalationRates: [12, 11.5, 11.2, 9.8, 8.5, 8.9, 9.2],
+        retryClarificationRates: [15, 14.5, 14, 11, 9.5, 10.1, 10.4],
+        activeVersion: ['v17', 'v17', 'v17', 'v18', 'v18', 'v18', 'v19'],
+      },
+      versionRows: [
+        { version: 'v17', success: '82%', retries: '14%', escalations: '11%', avgTokens: '3.8k' },
+        { version: 'v18', success: '89%', retries: '7%', escalations: '6%', avgTokens: '2.9k' },
+        { version: 'v19', success: '84%', retries: '10%', escalations: '9%', avgTokens: '2.8k' },
+      ],
+    },
     conversations: [
       { id: 'conv-101', agentId: 'product-qa', agent: 'Product Q&A Agent', userIntent: 'Compatibility wrong', outcome: 'Escalated · warranty risk', trustImpact: 'Negative', humanIntervention: 'Human corrected SKU mapping', status: 'Escalated', userQuestion: 'Will this charger work with NovaBook Air 14?', aiResponse: 'Yes—compatible with all NovaBook Air variants.', interventionSummary: ['Draft replaced before send.', 'Model year missing in context.'], suggestedImprovements: ['Ground compatibility table.', 'Soften certainty when year unknown.'] },
       { id: 'conv-102', agentId: 'returns-refunds', agent: 'Returns & Refunds Agent', userIntent: 'Refund policy unclear', outcome: 'Reviewed · exception applied', trustImpact: 'Negative', humanIntervention: 'Rewrote policy reply', status: 'Reviewed', userQuestion: 'Opened earbuds—return after 28 days?', aiResponse: 'Opened items are not eligible for refund.', interventionSummary: ['Loyalty tier exception added.', 'Customer stayed.'], suggestedImprovements: ['Surface tier rules in retrieval.'] },
@@ -340,6 +377,20 @@ const trustSnapshots: Record<TimeRange, TrustSnapshot> = {
         insightLine: 'Tied to catalog publish—monitoring active.',
       },
     ],
+    promptPerformance: {
+      trend: {
+        bucketLabels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Now'],
+        successRates: [82, 83, 84, 86, 88, 89, 87],
+        escalationRates: [11, 10.5, 10, 9.2, 7.5, 6.4, 6.8],
+        retryClarificationRates: [14, 13.5, 12, 9.8, 8, 7.2, 7.8],
+        activeVersion: ['v17', 'v17', 'v17', 'v18', 'v18', 'v18', 'v19'],
+      },
+      versionRows: [
+        { version: 'v17', success: '82%', retries: '14%', escalations: '11%', avgTokens: '3.8k' },
+        { version: 'v18', success: '89%', retries: '7%', escalations: '6%', avgTokens: '2.9k' },
+        { version: 'v19', success: '87%', retries: '7.8%', escalations: '6.8%', avgTokens: '2.7k' },
+      ],
+    },
     conversations: [
       { id: 'conv-201', agentId: 'product-qa', agent: 'Product Q&A Agent', userIntent: 'Keyboard compatibility', outcome: 'Escalated · wrong model year', trustImpact: 'Negative', humanIntervention: 'Matrix pasted · reply replaced', status: 'Escalated', userQuestion: 'Keyboard for NovaTab Air 2025?', aiResponse: 'Yes—all NovaTab Air models.', interventionSummary: ['Year constraint missed.', 'Handoff within SLA.'], suggestedImprovements: ['Year-aware retrieval.', 'Early handoff rule.'] },
       { id: 'conv-202', agentId: 'returns-refunds', agent: 'Returns & Refunds Agent', userIntent: 'Late return refund', outcome: 'Reviewed · exception', trustImpact: 'Negative', humanIntervention: 'Override + clear wording', status: 'Reviewed', userQuestion: 'Return window ended yesterday—refund?', aiResponse: 'No refund after 30 days.', interventionSummary: ['Tier rule applied.', 'CSAT recovered.'], suggestedImprovements: ['Inject tier exceptions.'] },
@@ -446,6 +497,20 @@ const trustSnapshots: Record<TimeRange, TrustSnapshot> = {
         insightLine: 'Post-catalog dip flattening after retrieval fix.',
       },
     ],
+    promptPerformance: {
+      trend: {
+        bucketLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        successRates: [83, 84, 85, 87, 88, 88, 88],
+        escalationRates: [11.5, 11, 10, 8.5, 7, 6.9, 7.1],
+        retryClarificationRates: [13.5, 12.5, 11.5, 9.5, 8.2, 8.0, 8.3],
+        activeVersion: ['v17', 'v17', 'v18', 'v18', 'v18', 'v19', 'v19'],
+      },
+      versionRows: [
+        { version: 'v17', success: '83%', retries: '13%', escalations: '11%', avgTokens: '3.6k' },
+        { version: 'v18', success: '88%', retries: '8%', escalations: '7%', avgTokens: '2.9k' },
+        { version: 'v19', success: '88%', retries: '8.1%', escalations: '7.1%', avgTokens: '2.6k' },
+      ],
+    },
     conversations: [
       { id: 'conv-301', agentId: 'product-qa', agent: 'Product Q&A Agent', userIntent: 'Dock compatibility', outcome: 'Reviewed · sourced fix', trustImpact: 'Negative', humanIntervention: 'Specialist swap + citation', status: 'Reviewed', userQuestion: 'NovaDock X + NovaBook Air 2023?', aiResponse: 'Yes—all Air models supported.', interventionSummary: ['Evidence gap closed.', 'No return opened.'], suggestedImprovements: ['Bind dock matrix to answers.'] },
       { id: 'conv-302', agentId: 'support-copilot', agent: 'Customer Support Copilot', userIntent: 'Refund vs replace', outcome: 'Resolved · zero edit', trustImpact: 'Positive', humanIntervention: 'None', status: 'Resolved', userQuestion: 'Show refund and replace side by side.', aiResponse: 'Both paths with timelines attached.', interventionSummary: ['Accepted as-is.', 'FCR.'], suggestedImprovements: ['Template as default.'] },

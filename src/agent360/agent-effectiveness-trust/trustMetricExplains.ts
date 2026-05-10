@@ -99,7 +99,7 @@ export const TRUST_METRIC_EXPLAINS: Record<string, MetricExplainContent> = {
   },
   'conversation-explorer-agent': {
     title: 'Agent',
-    definition: 'The NovaMart agent that handled this session (same fleet as Operational Health).',
+    definition: 'The AI agent that handled this session (same fleet as Operational Health).',
     why: 'Lets you tie a trust incident back to routing, prompts, and ownership.',
     measured: 'Agent ID from the conversation metadata in Agent360.',
     ops: 'Click the row to open investigation and jump to matrix metrics for that agent.',
@@ -203,7 +203,8 @@ export const TRUST_METRIC_EXPLAINS: Record<string, MetricExplainContent> = {
     title: 'Conversation trust',
     definition: 'Incident-style rows: real threads with outcome, trust impact, and human signal.',
     why: 'Makes trust tangible for reviews and exec reviews.',
-    measured: 'Curated examples from production traffic with PII scrubbed in demo datasets.',
+    measured:
+      'Curated examples from production traffic with PII scrubbed and packaged for governance review.',
     ops: 'Sort by status and trust impact to build the weekly narrative.',
   },
   'section-trust-trends': {
@@ -212,5 +213,38 @@ export const TRUST_METRIC_EXPLAINS: Record<string, MetricExplainContent> = {
     why: 'Shows direction: are people adopting assistive agents while user friction (loops and handoffs) falls?',
     measured: 'Rolling series aligned to the page time range (1h / 24h / 7d).',
     ops: 'If adoption rises but escalations or retry/clarification rise too, pause rollout and fix grounding first.',
+  },
+  'section-prompt-performance': {
+    title: 'Prompt Performance',
+    definition:
+      'Operational view of how deployed prompt templates (versions) line up with task success, handoffs, and user retry behavior—without opening an editor or raw prompt text.',
+    why: 'Leadership and ops can see whether a template change helped or hurt trust and completion before digging into transcripts.',
+    measured:
+      'Metrics are attributed to the prompt version active in each time bucket, using release tags and conversation metadata in Agent360.',
+    ops: 'Use after prompt or policy rollouts to confirm recovery, or to prioritize the next revision with evidence.',
+  },
+  'prompt-success-rate': {
+    title: 'Prompt success rate',
+    definition:
+      'Share of conversations that finished successfully while a given prompt version was live—same “clean completion” idea as fleet task success, scoped to the template window.',
+    why: 'Shows whether a wording or instruction change actually made it easier for users to get done.',
+    measured: 'Successful terminal workflow state with no escalation and no retry/clarification loop in-session.',
+    ops: 'Compare v17→v19 when you need a simple before/after story for stakeholders.',
+  },
+  'prompt-escalation-share': {
+    title: 'Escalation share (prompt window)',
+    definition:
+      'Percentage of conversations that hit a human handoff while that prompt version was active—fleet escalation rate, sliced by template deployment.',
+    why: 'Spikes here often mean the model is confident but wrong, policy is unclear in the template, or tools fail mid-flow.',
+    measured: 'Handoff events divided by conversations in the version-attributed cohort for the selected range.',
+    ops: 'Pair with retry/clarification and the escalation-reasons card to decide whether to fix retrieval, tone, or routing.',
+  },
+  'avg-prompt-tokens': {
+    title: 'Avg tokens',
+    definition:
+      'Average model tokens consumed per conversation for replies attributed to that prompt version—inbound + outbound relevant context, as logged by the runtime.',
+    why: 'Rising tokens with flat success can signal bloat; falling tokens with stable success can signal a healthier, cheaper template.',
+    measured: 'Summed completion tokens divided by conversation count per version, from agent runtime billing or usage logs.',
+    ops: 'Watch this alongside success and escalations so efficiency gains do not trade away trust.',
   },
 }

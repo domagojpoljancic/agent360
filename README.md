@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# Agent360
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**From agent activity to business value — in one 360° view.**
 
-Currently, two official plugins are available:
+Agent360 is a **prototype** AI agent observability and optimization platform. It gives product, operations, engineering, and finance stakeholders a shared **360° view** of reliability, trust, cost, and business impact across an enterprise AI agent fleet — using realistic **illustrative data** for demos and walkthroughs (not a live production system).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Why Agent360?
 
-## React Compiler
+As companies scale AI agents across support, operations, sales, and internal workflows, visibility fragments. Engineering sees reliability and errors; finance sees spend; operations sees escalations and workload; leadership wants business outcomes. **Agent360** brings these perspectives into **one operational narrative** so teams can prioritize the same facts.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Product Thesis
 
-## Expanding the ESLint configuration
+Agent360 helps teams move from disconnected activity metrics to shared business understanding:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Which agents create **value**?
+- Which agents **cost** too much relative to outcomes?
+- Which agents do users **trust**?
+- Which agents need **operational** attention before customers feel it?
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Core Views
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Value Delivered
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Measures whether AI agents create business value through **time saved**, **workload reduced**, **successful outcomes**, and **revenue influence** — so value is discussable in business terms, not only model metrics.
+
+### Cost Optimization
+
+Helps teams understand **AI spend**, **model routing efficiency**, **premium model overuse**, and **cost per successful outcome** — connecting FinOps thinking to what actually shipped for users.
+
+### Agent Effectiveness & Trust
+
+Shows whether agents are **useful and trusted** through task success, human corrections, escalation signals, and fleet-wide trust indicators — bridging “works in the lab” with “works in the wild.”
+
+### Operational Health
+
+Monitors **runtime reliability**, **latency**, **availability**, **errors**, **model/provider health**, and **dependency/tooling issues** — the layer that keeps agents dependable at scale.
+
+## Demo Scenario
+
+**NovaMart**, a fictional eCommerce company, uses Agent360 to monitor a fleet of AI agents across customer-facing and internal workflows.
+
+Example agents:
+
+- Shopping Concierge Agent  
+- Product Q&A Agent  
+- Order & Delivery Agent  
+- Returns & Refunds Agent  
+- Customer Support Copilot  
+- Merchandising Insights Agent  
+- Inventory & Fulfillment Agent  
+
+## What This Prototype Demonstrates
+
+From a product-management lens, Agent360 showcases:
+
+- **Multidimensional** AI observability (value, cost, trust, operations — not a single dashboard)
+- **Fleet-wide** agent monitoring and comparison
+- **Business value** framing alongside technical signals
+- **Cost-to-value** thinking (unit economics of successful outcomes)
+- **Human trust** signals next to automation metrics
+- **Enterprise stakeholder** perspectives in one UI
+- **AI-native** dashboard patterns (summaries, drill-downs, dense-but-readable enterprise dark UI)
+
+## Screens & Features
+
+- Landing / vision page with **360°** product positioning  
+- **Four** main business/operational views (Value, Cost, Trust, Health)  
+- **Customer feedback** page with ratings and structured reviews  
+- **AI feedback summaries** in operational flows  
+- Compact **global footer** with feedback entry  
+- **Premium dark** enterprise dashboard aesthetic  
+- Logo and asset previews under `public/` (SVG + PNG exports)
+
+## Running Locally
+
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Other scripts (when useful):
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- `npm run build` — production build  
+- `npm run lint` — ESLint  
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+There is no `npm test` script in this repo.
+
+## Repository note
+
+This project is intentionally a **walkthrough / review prototype**: data and narratives are **fabricated for demonstration** and should not be interpreted as a real customer deployment or production telemetry.

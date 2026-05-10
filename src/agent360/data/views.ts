@@ -26,10 +26,10 @@ import {
 } from 'lucide-react'
 
 export type ViewKey =
-  | 'operational-health'
-  | 'agent-effectiveness-trust'
   | 'value-delivered'
   | 'cost-optimization'
+  | 'agent-effectiveness-trust'
+  | 'operational-health'
 
 export type AccentTone = 'cyan' | 'violet' | 'emerald' | 'amber'
 
@@ -58,6 +58,8 @@ export type AgentView = {
   path: string
   title: string
   shortTitle: string
+  /** One-line label for the header page switcher menu. */
+  navSubtitle: string
   question: string
   description: string
   /** Short, hover-friendly description used by the orbit info panel. */
@@ -164,114 +166,11 @@ export const accentClasses: Record<
 
 export const views: AgentView[] = [
   {
-    key: 'operational-health',
-    path: '/operational-health',
-    title: 'Operational Health',
-    shortTitle: 'Health',
-    question: 'Is the agent stable and reliable?',
-    description:
-      'Monitor latency, errors, timeouts, tool failures, model availability, and infrastructure signals before they affect users.',
-    hoverDescription:
-      'Monitor latency, reliability, incidents, and provider health.',
-    exampleInsight: '2 agents on watch · uptime 99.94%',
-    accent: 'cyan',
-    icon: HeartPulse,
-    status: { label: 'All systems nominal', tone: 'healthy' },
-    stats: [
-      { label: 'p95 latency', value: '1.8s', trend: 'down', positive: true },
-      { label: 'Error rate', value: '0.7%', trend: 'down', positive: true },
-      { label: 'Uptime', value: '99.94%', trend: 'flat', positive: true },
-    ],
-    comingNext:
-      'Real-time reliability surface — from agent heartbeats to infrastructure dependencies.',
-    placeholderCards: [
-      {
-        title: 'Latency Monitoring',
-        description: 'p50 / p95 / p99 across agents, models and tool calls.',
-        icon: Gauge,
-        badge: 'Stable',
-        metric: { label: 'p95', value: '1.8s' },
-      },
-      {
-        title: 'Error & Timeout Trends',
-        description: 'Error budgets, retry storms, and cascading timeouts.',
-        icon: AlertTriangle,
-        badge: 'Watching',
-        metric: { label: '24h', value: '0.7%' },
-      },
-      {
-        title: 'Tool / API Reliability',
-        description: 'Connector availability, schema mismatches, throttling.',
-        icon: Plug,
-        badge: 'Healthy',
-        metric: { label: 'Connectors', value: '32/34' },
-      },
-      {
-        title: 'Incident Timeline',
-        description: 'Auto-correlated incidents with rollback windows.',
-        icon: Activity,
-        badge: '2 open',
-        metric: { label: 'MTTR', value: '11m' },
-      },
-    ],
-  },
-  {
-    key: 'agent-effectiveness-trust',
-    path: '/agent-effectiveness-trust',
-    title: 'Agent Effectiveness & Trust',
-    shortTitle: 'Trust',
-    question: 'Is the agent doing the job well enough to earn user confidence?',
-    description:
-      'Understand answer quality, groundedness, relevance, task success, retry/clarification behavior, escalation patterns, and fleet-wide trust signals.',
-    hoverDescription:
-      'Understand groundedness, task success, and user trust behavior across customer and internal agents.',
-    exampleInsight: '91% trusted answers · 9.1% retry/clarify loops',
-    accent: 'violet',
-    icon: ShieldCheck,
-    status: { label: 'Quality steady', tone: 'success' },
-    stats: [
-      { label: 'Trusted answers', value: '91%', trend: 'up', positive: true },
-      { label: 'Task success', value: '87%', trend: 'up', positive: true },
-      { label: 'Retry / clarify', value: '9.1%', trend: 'down', positive: true },
-    ],
-    comingNext:
-      'A trust layer for AI — quality scoring, hallucination detection, and human-in-the-loop signals.',
-    placeholderCards: [
-      {
-        title: 'Groundedness',
-        description: 'Citations, retrieval coverage, and source attribution.',
-        icon: BadgeCheck,
-        badge: 'Tracking',
-        metric: { label: 'Score', value: '94' },
-      },
-      {
-        title: 'Task Success',
-        description: 'Goal completion across journeys and intents.',
-        icon: Target,
-        badge: 'Improving',
-        metric: { label: 'Success', value: '84%' },
-      },
-      {
-        title: 'Hallucination Risk',
-        description: 'Drift detection and fabricated-claim signals.',
-        icon: BrainCircuit,
-        badge: 'Watch',
-        metric: { label: 'Risk', value: 'Low' },
-      },
-      {
-        title: 'Retry & clarification',
-        description: 'Rephrases, clarification loops, and restated intent after AI replies.',
-        icon: Wand2,
-        badge: 'Active',
-        metric: { label: 'Loop rate', value: '9.1%' },
-      },
-    ],
-  },
-  {
     key: 'value-delivered',
     path: '/value-delivered',
     title: 'Value Delivered',
     shortTitle: 'Value',
+    navSubtitle: 'Business outcomes and impact',
     question: 'Is the agent creating measurable business value?',
     description:
       'Track time saved, workload reduced, tickets avoided, customer experience improvements, productivity gains, and revenue influence.',
@@ -324,12 +223,13 @@ export const views: AgentView[] = [
     path: '/cost-optimization',
     title: 'Cost Optimization',
     shortTitle: 'Cost',
+    navSubtitle: 'AI efficiency and routing',
     question: 'Are we using the right models and resources for the value created?',
     description:
       'Connect AI spend to outcomes, identify premium model overuse, compare cost per successful task, and recommend smarter model routing.',
     hoverDescription:
       'Connect AI spend to outcomes and surface routing opportunities.',
-    exampleInsight: '€9.4k savings open · 18% optimised',
+    exampleInsight: '€9.4k savings open · 18% optimized',
     accent: 'amber',
     icon: Sliders,
     status: { label: 'Savings available', tone: 'watch' },
@@ -371,7 +271,137 @@ export const views: AgentView[] = [
       },
     ],
   },
+  {
+    key: 'agent-effectiveness-trust',
+    path: '/agent-effectiveness-trust',
+    title: 'Agent Effectiveness & Trust',
+    shortTitle: 'Trust',
+    navSubtitle: 'Human trust and quality',
+    question: 'Is the agent doing the job well enough to earn user confidence?',
+    description:
+      'Understand answer quality, groundedness, relevance, task success, retry/clarification behavior, escalation patterns, and fleet-wide trust signals.',
+    hoverDescription:
+      'Understand groundedness, task success, and user trust behavior across customer and internal agents.',
+    exampleInsight: '91% trusted answers · 9.1% retry/clarify loops',
+    accent: 'violet',
+    icon: ShieldCheck,
+    status: { label: 'Quality steady', tone: 'success' },
+    stats: [
+      { label: 'Trusted answers', value: '91%', trend: 'up', positive: true },
+      { label: 'Task success', value: '87%', trend: 'up', positive: true },
+      { label: 'Retry / clarify', value: '9.1%', trend: 'down', positive: true },
+    ],
+    comingNext:
+      'A trust layer for AI — quality scoring, hallucination detection, and human-in-the-loop signals.',
+    placeholderCards: [
+      {
+        title: 'Groundedness',
+        description: 'Citations, retrieval coverage, and source attribution.',
+        icon: BadgeCheck,
+        badge: 'Tracking',
+        metric: { label: 'Score', value: '94' },
+      },
+      {
+        title: 'Task Success',
+        description: 'Goal completion across journeys and intents.',
+        icon: Target,
+        badge: 'Improving',
+        metric: { label: 'Success', value: '87%' },
+      },
+      {
+        title: 'Hallucination Risk',
+        description: 'Drift detection and fabricated-claim signals.',
+        icon: BrainCircuit,
+        badge: 'Watch',
+        metric: { label: 'Risk', value: 'Low' },
+      },
+      {
+        title: 'Retry & clarification',
+        description: 'Rephrases, clarification loops, and restated intent after AI replies.',
+        icon: Wand2,
+        badge: 'Active',
+        metric: { label: 'Loop rate', value: '9.1%' },
+      },
+    ],
+  },
+  {
+    key: 'operational-health',
+    path: '/operational-health',
+    title: 'Operational Health',
+    shortTitle: 'Health',
+    navSubtitle: 'Runtime reliability monitoring',
+    question: 'Is the agent stable and reliable?',
+    description:
+      'Monitor latency, errors, timeouts, tool failures, model availability, and infrastructure signals before they affect users.',
+    hoverDescription:
+      'Monitor latency, reliability, incidents, and provider health.',
+    exampleInsight: '2 agents on watch · uptime 99.94%',
+    accent: 'cyan',
+    icon: HeartPulse,
+    status: { label: 'All systems nominal', tone: 'healthy' },
+    stats: [
+      { label: 'p95 latency', value: '1.8s', trend: 'down', positive: true },
+      { label: 'Error rate', value: '0.7%', trend: 'down', positive: true },
+      { label: 'Uptime', value: '99.94%', trend: 'flat', positive: true },
+    ],
+    comingNext:
+      'Real-time reliability surface — from agent heartbeats to infrastructure dependencies.',
+    placeholderCards: [
+      {
+        title: 'Latency Monitoring',
+        description: 'p50 / p95 / p99 across agents, models and tool calls.',
+        icon: Gauge,
+        badge: 'Stable',
+        metric: { label: 'p95', value: '1.8s' },
+      },
+      {
+        title: 'Error & Timeout Trends',
+        description: 'Error budgets, retry storms, and cascading timeouts.',
+        icon: AlertTriangle,
+        badge: 'Watching',
+        metric: { label: '24h', value: '0.7%' },
+      },
+      {
+        title: 'Tool / API Reliability',
+        description: 'Connector availability, schema mismatches, throttling.',
+        icon: Plug,
+        badge: 'Healthy',
+        metric: { label: 'Connectors', value: '32/34' },
+      },
+      {
+        title: 'Incident Timeline',
+        description: 'Auto-correlated incidents with rollback windows.',
+        icon: Activity,
+        badge: '2 open',
+        metric: { label: 'MTTR', value: '11m' },
+      },
+    ],
+  },
 ]
+
+/**
+ * Fixed menu width (px) for the header page switcher: widest row’s text column
+ * (max of title vs subtitle per view) plus icon, gaps, check column, padding.
+ * Caps at 560px; use with `min(..., calc(100vw - 2rem))` in the component.
+ */
+export const PAGE_SWITCHER_MENU_WIDTH_PX = (() => {
+  const padX = 16
+  const icon = 36
+  const gap = 8
+  const check = 18
+  const titlePxPerChar = 7.1
+  const subPxPerChar = 5.35
+
+  const maxTextCol = views.reduce((max, v) => {
+    const row = Math.max(
+      v.title.length * titlePxPerChar,
+      v.navSubtitle.length * subPxPerChar,
+    )
+    return Math.max(max, row)
+  }, 0)
+
+  return Math.min(Math.ceil(padX + icon + gap + maxTextCol + gap + check + 6), 560)
+})()
 
 export function getViewByPath(path: string): AgentView | undefined {
   return views.find((view) => view.path === path)

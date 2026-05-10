@@ -1,4 +1,5 @@
 import { ArrowLeft } from 'lucide-react'
+import { Agent360Footer } from '../components/Agent360Footer'
 import { GridBackground } from '../components/GridBackground'
 import { Header } from '../components/Header'
 import { operationalHealthData } from '../operational-health/data'
@@ -14,11 +15,11 @@ export function OperationalHealthAgentPage({ agentId }: OperationalHealthAgentPa
 
   if (!agent) {
     return (
-      <div className="relative min-h-screen text-[#f2f0eb]">
+      <div className="relative flex min-h-screen flex-col text-[#f2f0eb]">
         <GridBackground variant="page" />
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-1 flex-col">
           <Header />
-          <main className="mx-auto max-w-4xl px-4 py-16 md:px-6">
+          <main className="mx-auto max-w-4xl flex-1 px-4 py-16 md:px-6">
             <button
               type="button"
               onClick={() => navigate('/operational-health')}
@@ -29,17 +30,19 @@ export function OperationalHealthAgentPage({ agentId }: OperationalHealthAgentPa
             </button>
             <p className="mt-5 text-[#f2f0eb]/70">Agent not found.</p>
           </main>
+
+          <Agent360Footer />
         </div>
       </div>
     )
   }
 
   return (
-    <div className="relative min-h-screen text-[#f2f0eb]">
+    <div className="relative flex min-h-screen flex-col text-[#f2f0eb]">
       <GridBackground variant="page" />
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col">
         <Header />
-        <main className="mx-auto max-w-6xl space-y-4 px-4 pb-16 pt-8 md:px-6">
+        <main className="mx-auto max-w-6xl flex-1 space-y-4 px-4 pb-12 pt-8 md:px-6 md:pb-14">
           <button
             type="button"
             onClick={() => navigate('/operational-health')}
@@ -84,6 +87,8 @@ export function OperationalHealthAgentPage({ agentId }: OperationalHealthAgentPa
             </article>
           </section>
         </main>
+
+        <Agent360Footer />
       </div>
     </div>
   )

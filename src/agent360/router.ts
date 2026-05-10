@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 
 const ROUTE_CHANGE_EVENT = 'agent360:routechange'
 
-function getCurrentPath(): string {
+export function getCurrentPath(): string {
   if (typeof window === 'undefined') return '/'
   return window.location.pathname || '/'
 }

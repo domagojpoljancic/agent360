@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowLeft, Search, Sparkles } from 'lucide-react'
+import { ArrowLeft, Search } from 'lucide-react'
+import { Agent360Footer } from '../components/Agent360Footer'
+import { ComparisonPageLoader } from '../components/ComparisonPageLoader'
 import { GridBackground } from '../components/GridBackground'
 import { Header } from '../components/Header'
 import { SortableHeader } from '../../components/SortableHeader'
@@ -139,53 +141,20 @@ export function ModelComparisonPage() {
 
   if (!ready) {
     return (
-      <div className="relative min-h-screen text-[#f2f0eb]">
-        <GridBackground variant="page" />
-        <div className="relative z-10">
-          <Header />
-          <main className="mx-auto max-w-7xl space-y-4 px-4 pb-20 pt-8 md:px-6">
-            <section className="rounded-2xl border border-[#3694fc]/25 bg-[#171722]/90 p-5">
-              <div className="flex items-center gap-3">
-                <span className="relative flex size-10 items-center justify-center rounded-lg border border-[#3694fc]/30 bg-[#3694fc]/10">
-                  <span className="absolute inset-0 animate-pulse rounded-lg bg-[#3694fc]/15" />
-                  <Sparkles className="relative size-4 text-[#8abefc]" />
-                </span>
-                <div>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-[#f2f0eb]/45">
-                    Agent360 / Model Comparison
-                  </p>
-                  <p className="text-sm text-[#f2f0eb]/82">{LOADING_STEPS[loadingStep]}</p>
-                </div>
-              </div>
-              <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
-                <div className="h-full w-1/2 animate-[shimmer_1.2s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-[#3694fc]/60 to-transparent" />
-              </div>
-            </section>
-            <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-3 md:p-4">
-              <div className="space-y-2">
-                {[0, 1, 2, 3, 4, 5].map((row) => (
-                  <div key={row} className="h-9 animate-pulse rounded-md bg-white/[0.04]" />
-                ))}
-              </div>
-            </section>
-          </main>
-        </div>
-        <style>{`
-          @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(220%); }
-          }
-        `}</style>
-      </div>
+      <ComparisonPageLoader
+        eyebrow="Agent360 / Model Comparison"
+        steps={LOADING_STEPS}
+        activeStepIndex={loadingStep}
+      />
     )
   }
 
   return (
-    <div className="relative min-h-screen text-[#f2f0eb] motion-safe:animate-[comparisonFadeIn_0.4s_ease-out]">
+    <div className="relative flex min-h-screen flex-col text-[#f2f0eb] motion-safe:animate-[comparisonFadeIn_0.4s_ease-out]">
       <GridBackground variant="page" />
-      <div className="relative z-10">
+      <div className="relative z-10 flex flex-1 flex-col">
         <Header />
-        <main className="mx-auto max-w-7xl space-y-4 px-4 pb-20 pt-8 md:px-6">
+        <main className="mx-auto max-w-7xl flex-1 space-y-4 px-4 pb-12 pt-8 md:px-6 md:pb-14">
           <section className="rounded-2xl border border-white/[0.08] bg-white/[0.02] p-4 md:p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
@@ -350,6 +319,8 @@ export function ModelComparisonPage() {
             </div>
           </section>
         </main>
+
+        <Agent360Footer />
       </div>
 
       {selected ? (

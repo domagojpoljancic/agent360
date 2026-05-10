@@ -1,6 +1,6 @@
 import { Sparkles } from 'lucide-react'
 
-const TOOLTIP = 'Generate an AI summary of this board for the selected time range.'
+const DEFAULT_TOOLTIP = 'Generate an AI summary of this board for the selected time range.'
 
 type AISummaryButtonProps = {
   onClick: () => void
@@ -8,12 +8,18 @@ type AISummaryButtonProps = {
   generating?: boolean
   /** Drawer open (including after content ready) — keeps focus ring */
   drawerOpen?: boolean
+  /** Button label (default: AI Summary) */
+  label?: string
+  /** Hover tooltip */
+  tooltip?: string
 }
 
 export function AISummaryButton({
   onClick,
   generating = false,
   drawerOpen = false,
+  label = 'AI Summary',
+  tooltip = DEFAULT_TOOLTIP,
 }: AISummaryButtonProps) {
   return (
     <div className="group/button relative shrink-0">
@@ -35,10 +41,10 @@ export function AISummaryButton({
           className={`relative size-4 shrink-0 text-white drop-shadow-[0_0_6px_rgba(138,190,252,0.9)] ${generating ? 'animate-pulse' : 'transition group-hover/button:rotate-12'}`}
           aria-hidden
         />
-        <span className="relative">AI Summary</span>
+        <span className="relative">{label}</span>
       </button>
       <div className="pointer-events-none absolute bottom-full right-0 z-30 mb-2 w-60 rounded-lg border border-white/[0.12] bg-[#161620] px-2.5 py-2 text-[11px] leading-snug text-[#f2f0eb]/78 opacity-0 shadow-[0_14px_30px_-20px_rgba(0,0,0,0.8)] transition duration-150 group-hover/button:opacity-100">
-        {TOOLTIP}
+        {tooltip}
       </div>
     </div>
   )
