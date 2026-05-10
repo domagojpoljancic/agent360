@@ -37,7 +37,7 @@ Monitors **runtime reliability**, **latency**, **availability**, **errors**, **m
 
 ## Demo Scenario
 
-**NovaMart**, a fictional eCommerce company, uses Agent360 to monitor a fleet of AI agents across customer-facing and internal workflows.
+The prototype is framed around a **generic enterprise retailer** using Agent360 to monitor a fleet of AI agents across customer-facing and internal workflows (illustrative only).
 
 Example agents:
 
