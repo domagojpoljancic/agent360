@@ -4,7 +4,7 @@ import { FleetMatrixAgentInfo } from '../../components/FleetMatrixAgentInfo'
 import { SortableHeader } from '../../../components/SortableHeader'
 import { nextSortState, sortRows, type SortState } from '../../../utils/tableSorting'
 import type { AgentCostRow } from '../data'
-import { Sparkline } from '../../operational-health/components/shared'
+import { SparkChart } from '../../components/charts'
 
 type FleetCostMatrixProps = {
   rows: AgentCostRow[]
@@ -126,9 +126,10 @@ export function FleetCostMatrix({ rows, selectedAgentId, onSelectAgent }: FleetC
                   <td className="px-3 py-3">
                     <div className="flex items-center gap-2">
                       <div className="w-24">
-                        <Sparkline
+                        <SparkChart
                           points={row.sparkline}
                           danger={row.efficiencyStatus === 'Critical'}
+                          tone="cost-optimization"
                           className="h-6 w-full"
                         />
                       </div>

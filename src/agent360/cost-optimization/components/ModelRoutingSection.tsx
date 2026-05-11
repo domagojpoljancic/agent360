@@ -1,7 +1,7 @@
 import type { FleetMetric } from '../../operational-health/data'
 import type { RoutingComplexityBucket, TopRoutingSignal } from '../data'
 import { RoutingEfficiencyInfoPopover } from './RoutingEfficiencyInfoPopover'
-import { Sparkline } from '../../operational-health/components/shared'
+import { SparkChart } from '../../components/charts'
 
 type ModelRoutingSectionProps = {
   routingSummaryKpis: FleetMetric[]
@@ -69,9 +69,10 @@ export function ModelRoutingSection({
               </div>
               <p className="text-[22px] font-semibold leading-none text-[#f2f0eb]">{metric.value}</p>
               <div className="mt-2 rounded-md border border-white/[0.06] bg-white/[0.02] px-1 py-0.5">
-                <Sparkline
+                <SparkChart
                   points={metric.sparkline}
                   danger={metric.tone === 'critical'}
+                  tone="cost-optimization"
                   className="h-5 w-full"
                 />
               </div>

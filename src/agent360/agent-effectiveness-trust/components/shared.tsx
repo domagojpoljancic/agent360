@@ -1,6 +1,11 @@
+import { SparkChart } from '../../components/charts'
 import { StatusBadge } from '../../components/StatusBadge'
 import type { TrustStatus, TrustTone } from '../data'
 
+/**
+ * Trust-page sparkline shim — delegates to the centralized `SparkChart`.
+ * Reversible via `USE_LEGACY_CHARTS` in `components/charts/sparkConfig.ts`.
+ */
 export function Sparkline({
   points,
   danger = false,
@@ -10,30 +15,13 @@ export function Sparkline({
   danger?: boolean
   className?: string
 }) {
-  const min = Math.min(...points)
-  const max = Math.max(...points)
-  const padY = 8
-  const chartHeight = 100 - padY * 2
-  const normalized = points.map((value, index) => {
-    const x = (index / (points.length - 1 || 1)) * 100
-    const y =
-      max === min
-        ? 50
-        : 100 - padY - ((value - min) / (max - min)) * chartHeight
-    return `${x},${y}`
-  })
   return (
-    <svg viewBox="0 0 100 100" className={className ?? 'h-7 w-full'} preserveAspectRatio="none">
-      <polyline
-        fill="none"
-        stroke={danger ? '#E07a83' : '#9aa6f0'}
-        strokeWidth="3"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        points={normalized.join(' ')}
-        className="drop-shadow-[0_0_8px_rgba(154,166,240,0.5)]"
-      />
-    </svg>
+    <SparkChart
+      points={points}
+      className={className}
+      tone="agent-effectiveness-trust"
+      danger={danger}
+    />
   )
 }
 

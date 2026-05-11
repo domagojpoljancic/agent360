@@ -1,7 +1,7 @@
 import { Sliders } from 'lucide-react'
+import { SparkChart } from '../../components/charts'
 import type { PageTheme } from '../../data/pageThemes'
 import type { FleetMetric } from '../../operational-health/data'
-import { Sparkline } from '../../operational-health/components/shared'
 
 type CostOverviewStripProps = {
   metrics: FleetMetric[]
@@ -57,9 +57,10 @@ export function CostOverviewStrip({ metrics, theme }: CostOverviewStripProps) {
                 {metric.secondary ?? '\u00a0'}
               </p>
               <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-1 py-0.5">
-                <Sparkline
+                <SparkChart
                   points={metric.sparkline}
                   danger={metric.tone === 'critical'}
+                  tone="cost-optimization"
                   className="h-6 w-full"
                 />
               </div>
