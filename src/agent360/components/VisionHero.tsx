@@ -44,8 +44,10 @@ export function VisionHero({ onLaunch, launching = false }: VisionHeroProps) {
         outcomes, without switching tools.
       </p>
 
-      {/* CTA */}
-      <div className="mt-9 flex flex-col items-center gap-4 md:mt-11">
+      {/* CTA — top margin tightened (was mt-9 md:mt-11) so the helper line
+          sits closer to the fold and the "For every team" section appears
+          higher on standard laptop heights. */}
+      <div className="mt-7 flex flex-col items-center gap-3 md:mt-9">
         <button
           type="button"
           onClick={onLaunch}

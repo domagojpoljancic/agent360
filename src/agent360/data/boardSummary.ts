@@ -97,3 +97,25 @@ export const costOptimizationBoardSummary: BoardSummarySections = {
 
 export const boardSummaryFooter =
   'AI summary · Based on current board state · Last updated 2 min ago'
+
+export const conversationMemoryAIContextCheck: BoardSummarySections = {
+  verdict:
+    'Conversational continuity is broadly healthy: agents track follow-ups, resolve references, and rarely make users repeat themselves on short threads. The exception is long, policy-heavy refund conversations where context truncation is starting to show.',
+  performingWell: [
+    'Follow-up understanding stays strong across customer-facing agents, including multi-turn order and delivery questions.',
+    'Session continuity held up after the CRM sync update; no regressions observed across reconnects.',
+    'Repeat prompt rate is trending down on the support copilot since the summary-memory rollout.',
+  ],
+  needsAttention: [
+    'Returns & Refunds Agent shows elevated context truncation in long refund threads—answers may lose earlier turns.',
+    'Product Q&A follow-up understanding drops on multi-step compatibility flows after the fifth turn.',
+    'Customer Support Copilot sessions still see users repeating account details in ~9% of conversations.',
+  ],
+  nextActions: [
+    'Enable rolling summarization or longer-window routing on refund threads >12 turns.',
+    'Add explicit context anchors to compatibility prompts; revisit the multi-step opener for Product Q&A.',
+    'Pull account context earlier in copilot sessions so operators don’t have to re-ask basics.',
+  ],
+}
+
+export const aiContextCheckSubtitle = 'Conversation context & memory analysis'

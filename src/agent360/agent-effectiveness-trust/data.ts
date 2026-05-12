@@ -112,11 +112,58 @@ export type PromptPerformanceBlock = {
   versionRows: PromptVersionRow[]
 }
 
+/** Conversation context & memory: continuity quality of multi-turn interactions. */
+export type ConversationMemoryMetric = {
+  id: string
+  label: string
+  value: string
+  tone: TrustTone
+  trend: TrustTrend
+  /** Optional period-over-period delta string, e.g. "+0.4%" / "-1.2%". */
+  delta?: string
+  sparkline: number[]
+  explainKey: string
+}
+
+export type ConversationMemoryFlowStatus =
+  | 'context-resolved'
+  | 'memory-used'
+  | 'continuity-maintained'
+  | 'repeat-avoided'
+
+export type ConversationMemoryFlowStep = {
+  id: string
+  label: string
+  caption: string
+  status: ConversationMemoryFlowStatus
+}
+
+export type ConversationMemoryRiskSeverity = 'critical' | 'warning' | 'info'
+
+export type ConversationMemoryRiskSignal = {
+  id: string
+  severity: ConversationMemoryRiskSeverity
+  agentId: string
+  agentName: string
+  signal: string
+  affectedSessions?: string
+}
+
+export type ConversationMemoryBlock = {
+  metrics: ConversationMemoryMetric[]
+  flow: {
+    summary: string
+    steps: ConversationMemoryFlowStep[]
+  }
+  risks: ConversationMemoryRiskSignal[]
+}
+
 export type TrustSnapshot = {
   overview: TrustOverviewMetric[]
   matrixRows: FleetTrustRow[]
   trustSignals: TrustSignalCard[]
   promptPerformance: PromptPerformanceBlock
+  conversationMemory: ConversationMemoryBlock
   conversations: ConversationTrustRow[]
   trends: TrustTrendSeries[]
 }
@@ -271,6 +318,30 @@ const trustSnapshots: Record<TimeRange, TrustSnapshot> = {
         { version: 'v19', success: '84%', retries: '10%', escalations: '9%', avgTokens: '2.8k' },
       ],
     },
+    conversationMemory: {
+      metrics: [
+        { id: 'follow-up-understanding', label: 'Follow-up understanding', value: '86.1%', tone: 'success', trend: 'flat', delta: '-0.3%', sparkline: [86, 86.4, 86.2, 86.0, 85.9, 86.1, 86.1], explainKey: 'follow-up-understanding' },
+        { id: 'session-continuity', label: 'Session continuity', value: '90.4%', tone: 'success', trend: 'flat', delta: '+0.2%', sparkline: [90, 90.1, 90.3, 90.5, 90.4, 90.3, 90.4], explainKey: 'session-continuity' },
+        { id: 'context-resolution', label: 'Context resolution', value: '83.7%', tone: 'watch', trend: 'down', delta: '-1.4%', sparkline: [85, 84.6, 84.2, 84.0, 83.8, 83.7, 83.7], explainKey: 'context-resolution' },
+        { id: 'repeat-prompt-rate', label: 'Repeat prompt rate', value: '8.3%', tone: 'watch', trend: 'up', delta: '+0.9%', sparkline: [7.2, 7.5, 7.8, 8.0, 8.1, 8.2, 8.3], explainKey: 'repeat-prompt-rate' },
+        { id: 'context-truncation-risk', label: 'Context truncation risk', value: '4.6%', tone: 'critical', trend: 'up', delta: '+0.8%', sparkline: [3.6, 3.9, 4.1, 4.2, 4.4, 4.5, 4.6], explainKey: 'context-truncation-risk' },
+      ],
+      flow: {
+        summary: 'Sampled multi-turn pattern · last hour',
+        steps: [
+          { id: 'user-question', label: 'User asks', caption: '“Can I return my last order?”', status: 'memory-used' },
+          { id: 'follow-up', label: 'Follow-up', caption: '“And the one before it?”', status: 'context-resolved' },
+          { id: 'context-resolution', label: 'Reference resolved', caption: 'Linked to prior order #A-4821', status: 'continuity-maintained' },
+          { id: 'agent-response', label: 'Agent answers', caption: 'No repeat info needed', status: 'repeat-avoided' },
+        ],
+      },
+      risks: [
+        { id: 'memory-risk-101', severity: 'critical', agentId: 'returns-refunds', agentName: 'Returns & Refunds Agent', signal: 'Context truncation detected in long refund threads.', affectedSessions: '52 sessions' },
+        { id: 'memory-risk-102', severity: 'warning', agentId: 'support-copilot', agentName: 'Customer Support Copilot', signal: 'Users repeated account details in 9.2% of sessions this hour.', affectedSessions: '142 sessions' },
+        { id: 'memory-risk-103', severity: 'warning', agentId: 'product-qa', agentName: 'Product Q&A Agent', signal: 'Follow-up understanding dipped on compatibility threads >5 turns.', affectedSessions: '38 sessions' },
+        { id: 'memory-risk-104', severity: 'info', agentId: 'order-delivery', agentName: 'Order & Delivery Agent', signal: 'Session continuity improved after CRM sync update.', affectedSessions: 'Fleet · today' },
+      ],
+    },
     conversations: [
       { id: 'conv-101', agentId: 'product-qa', agent: 'Product Q&A Agent', userIntent: 'Compatibility wrong', outcome: 'Escalated · warranty risk', trustImpact: 'Negative', humanIntervention: 'Human corrected SKU mapping', status: 'Escalated', userQuestion: 'Will this charger work with NovaBook Air 14?', aiResponse: 'Yes—compatible with all NovaBook Air variants.', interventionSummary: ['Draft replaced before send.', 'Model year missing in context.'], suggestedImprovements: ['Ground compatibility table.', 'Soften certainty when year unknown.'] },
       { id: 'conv-102', agentId: 'returns-refunds', agent: 'Returns & Refunds Agent', userIntent: 'Refund policy unclear', outcome: 'Reviewed · exception applied', trustImpact: 'Negative', humanIntervention: 'Rewrote policy reply', status: 'Reviewed', userQuestion: 'Opened earbuds—return after 28 days?', aiResponse: 'Opened items are not eligible for refund.', interventionSummary: ['Loyalty tier exception added.', 'Customer stayed.'], suggestedImprovements: ['Surface tier rules in retrieval.'] },
@@ -391,6 +462,30 @@ const trustSnapshots: Record<TimeRange, TrustSnapshot> = {
         { version: 'v19', success: '87%', retries: '7.8%', escalations: '6.8%', avgTokens: '2.7k' },
       ],
     },
+    conversationMemory: {
+      metrics: [
+        { id: 'follow-up-understanding', label: 'Follow-up understanding', value: '87.4%', tone: 'success', trend: 'up', delta: '+1.1%', sparkline: [85.5, 85.9, 86.3, 86.7, 87.0, 87.2, 87.4], explainKey: 'follow-up-understanding' },
+        { id: 'session-continuity', label: 'Session continuity', value: '91.2%', tone: 'live', trend: 'up', delta: '+0.6%', sparkline: [89.8, 90.1, 90.4, 90.6, 90.9, 91.0, 91.2], explainKey: 'session-continuity' },
+        { id: 'context-resolution', label: 'Context resolution', value: '84.9%', tone: 'watch', trend: 'flat', delta: '+0.1%', sparkline: [84.5, 84.6, 84.7, 84.8, 84.9, 84.8, 84.9], explainKey: 'context-resolution' },
+        { id: 'repeat-prompt-rate', label: 'Repeat prompt rate', value: '7.6%', tone: 'watch', trend: 'down', delta: '-0.7%', sparkline: [8.5, 8.3, 8.1, 7.9, 7.8, 7.7, 7.6], explainKey: 'repeat-prompt-rate' },
+        { id: 'context-truncation-risk', label: 'Context truncation risk', value: '4.1%', tone: 'critical', trend: 'flat', delta: '+0.2%', sparkline: [3.8, 3.9, 4.0, 4.1, 4.0, 4.0, 4.1], explainKey: 'context-truncation-risk' },
+      ],
+      flow: {
+        summary: 'Representative multi-turn pattern · 24h sample',
+        steps: [
+          { id: 'user-question', label: 'User asks', caption: '“Where is order #A-4821?”', status: 'memory-used' },
+          { id: 'follow-up', label: 'Follow-up', caption: '“And can I still cancel it?”', status: 'context-resolved' },
+          { id: 'context-resolution', label: 'Reference resolved', caption: 'Linked to active order, SLA window', status: 'continuity-maintained' },
+          { id: 'agent-response', label: 'Agent answers', caption: 'Replied without asking again', status: 'repeat-avoided' },
+        ],
+      },
+      risks: [
+        { id: 'memory-risk-201', severity: 'critical', agentId: 'returns-refunds', agentName: 'Returns & Refunds Agent', signal: 'Context truncation detected in long refund conversations.', affectedSessions: '187 sessions' },
+        { id: 'memory-risk-202', severity: 'warning', agentId: 'support-copilot', agentName: 'Customer Support Copilot', signal: 'Users repeated account details in 9.2% of sessions.', affectedSessions: '614 sessions' },
+        { id: 'memory-risk-203', severity: 'warning', agentId: 'product-qa', agentName: 'Product Q&A Agent', signal: 'Follow-up understanding dropped in multi-step compatibility flows.', affectedSessions: '142 sessions' },
+        { id: 'memory-risk-204', severity: 'info', agentId: 'order-delivery', agentName: 'Order & Delivery Agent', signal: 'Session continuity improved after CRM sync update.', affectedSessions: 'Fleet · 24h' },
+      ],
+    },
     conversations: [
       { id: 'conv-201', agentId: 'product-qa', agent: 'Product Q&A Agent', userIntent: 'Keyboard compatibility', outcome: 'Escalated · wrong model year', trustImpact: 'Negative', humanIntervention: 'Matrix pasted · reply replaced', status: 'Escalated', userQuestion: 'Keyboard for NovaTab Air 2025?', aiResponse: 'Yes—all NovaTab Air models.', interventionSummary: ['Year constraint missed.', 'Handoff within SLA.'], suggestedImprovements: ['Year-aware retrieval.', 'Early handoff rule.'] },
       { id: 'conv-202', agentId: 'returns-refunds', agent: 'Returns & Refunds Agent', userIntent: 'Late return refund', outcome: 'Reviewed · exception', trustImpact: 'Negative', humanIntervention: 'Override + clear wording', status: 'Reviewed', userQuestion: 'Return window ended yesterday—refund?', aiResponse: 'No refund after 30 days.', interventionSummary: ['Tier rule applied.', 'CSAT recovered.'], suggestedImprovements: ['Inject tier exceptions.'] },
@@ -509,6 +604,30 @@ const trustSnapshots: Record<TimeRange, TrustSnapshot> = {
         { version: 'v17', success: '83%', retries: '13%', escalations: '11%', avgTokens: '3.6k' },
         { version: 'v18', success: '88%', retries: '8%', escalations: '7%', avgTokens: '2.9k' },
         { version: 'v19', success: '88%', retries: '8.1%', escalations: '7.1%', avgTokens: '2.6k' },
+      ],
+    },
+    conversationMemory: {
+      metrics: [
+        { id: 'follow-up-understanding', label: 'Follow-up understanding', value: '88.6%', tone: 'live', trend: 'up', delta: '+2.4%', sparkline: [85.5, 86.1, 86.8, 87.4, 87.9, 88.3, 88.6], explainKey: 'follow-up-understanding' },
+        { id: 'session-continuity', label: 'Session continuity', value: '92.0%', tone: 'live', trend: 'up', delta: '+1.3%', sparkline: [89.5, 90.0, 90.5, 91.0, 91.4, 91.7, 92.0], explainKey: 'session-continuity' },
+        { id: 'context-resolution', label: 'Context resolution', value: '85.5%', tone: 'success', trend: 'up', delta: '+0.8%', sparkline: [84.0, 84.3, 84.7, 85.0, 85.2, 85.4, 85.5], explainKey: 'context-resolution' },
+        { id: 'repeat-prompt-rate', label: 'Repeat prompt rate', value: '6.9%', tone: 'success', trend: 'down', delta: '-1.5%', sparkline: [8.6, 8.2, 7.8, 7.5, 7.3, 7.1, 6.9], explainKey: 'repeat-prompt-rate' },
+        { id: 'context-truncation-risk', label: 'Context truncation risk', value: '3.7%', tone: 'watch', trend: 'down', delta: '-0.6%', sparkline: [4.4, 4.2, 4.0, 3.9, 3.8, 3.7, 3.7], explainKey: 'context-truncation-risk' },
+      ],
+      flow: {
+        summary: 'Weekly pattern · pooled multi-turn samples',
+        steps: [
+          { id: 'user-question', label: 'User asks', caption: '“Why was my refund delayed?”', status: 'memory-used' },
+          { id: 'follow-up', label: 'Follow-up', caption: '“What about the earbuds from last month?”', status: 'context-resolved' },
+          { id: 'context-resolution', label: 'Reference resolved', caption: 'Mapped to prior return + loyalty tier', status: 'continuity-maintained' },
+          { id: 'agent-response', label: 'Agent answers', caption: 'No repeat of account info needed', status: 'repeat-avoided' },
+        ],
+      },
+      risks: [
+        { id: 'memory-risk-301', severity: 'warning', agentId: 'returns-refunds', agentName: 'Returns & Refunds Agent', signal: 'Long refund conversations still bump into context window limits.', affectedSessions: '1.1k sessions' },
+        { id: 'memory-risk-302', severity: 'warning', agentId: 'product-qa', agentName: 'Product Q&A Agent', signal: 'Follow-up understanding remains lower on multi-step setup flows.', affectedSessions: '820 sessions' },
+        { id: 'memory-risk-303', severity: 'info', agentId: 'support-copilot', agentName: 'Customer Support Copilot', signal: 'Repeat prompt rate trending down after summary memory rollout.', affectedSessions: 'Fleet · 7d' },
+        { id: 'memory-risk-304', severity: 'info', agentId: 'order-delivery', agentName: 'Order & Delivery Agent', signal: 'Session continuity stable post CRM sync; no regressions detected.', affectedSessions: 'Fleet · 7d' },
       ],
     },
     conversations: [

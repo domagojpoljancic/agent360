@@ -75,14 +75,18 @@ export function VisionPage() {
       {/* Page content (the part that scales, blurs, and fades on launch) */}
       <div className="a360-vision-content relative z-10 flex flex-1 flex-col">
         <main className="mx-auto w-full max-w-[1440px] flex-1 px-4 md:px-6">
-          {/* Section 1 — Hero */}
-          <section className="flex min-h-[78vh] flex-col items-center justify-center pt-20 pb-20 md:pt-28 md:pb-28">
+          {/* Section 1 — Hero. Vertical footprint is tuned so the "For every
+              team" section appears above the fold on standard laptop heights:
+              `min-h-[66vh]` plus tighter top/bottom padding keeps the hero
+              cinematic while pulling section 2 ~120-150px higher. */}
+          <section className="flex min-h-[66vh] flex-col items-center justify-center pt-14 pb-12 md:pt-20 md:pb-16">
             <VisionHero onLaunch={handleLaunch} launching={launching} />
           </section>
 
-          {/* Section 2 — Built for every team */}
-          <section className="pb-24 md:pb-28">
-            <header className="mx-auto mb-8 flex max-w-3xl flex-col items-center gap-3 text-center md:mb-10">
+          {/* Section 2 — Built for every team. Padding tightened so the team
+              cards start landing above the fold on common viewport heights. */}
+          <section className="pb-16 md:pb-20">
+            <header className="mx-auto mb-6 flex max-w-3xl flex-col items-center gap-3 text-center md:mb-8">
               <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.07] bg-white/[0.02] px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.22em] text-[#f2f0eb]/55">
                 <span className="size-1 rounded-full bg-[#3694fc]" />
                 For every team

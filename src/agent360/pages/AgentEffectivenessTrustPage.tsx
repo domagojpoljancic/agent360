@@ -11,6 +11,7 @@ import { TrustOverviewStrip } from '../agent-effectiveness-trust/components/Trus
 import { FleetTrustMatrix } from '../agent-effectiveness-trust/components/FleetTrustMatrix'
 import { TrustSignalsSection } from '../agent-effectiveness-trust/components/TrustSignalsSection'
 import { PromptPerformanceSection } from '../agent-effectiveness-trust/components/PromptPerformanceSection'
+import { ConversationMemorySection } from '../agent-effectiveness-trust/components/ConversationMemorySection'
 import { ConversationExplorer } from '../agent-effectiveness-trust/components/ConversationExplorer'
 import { TrustTrendsAdoption } from '../agent-effectiveness-trust/components/TrustTrendsAdoption'
 import { InvestigationDrawer } from '../agent-effectiveness-trust/components/InvestigationDrawer'
@@ -20,7 +21,9 @@ import { AISummaryDrawer } from '../components/AISummaryDrawer'
 import { AISummaryLoadingState } from '../components/AISummaryLoadingState'
 import {
   agentEffectivenessTrustBoardSummary,
+  aiContextCheckSubtitle,
   boardSummarySubtitle,
+  conversationMemoryAIContextCheck,
 } from '../data/boardSummary'
 import { getPageTheme } from '../data/pageThemes'
 
@@ -30,6 +33,14 @@ type DrawerTarget =
   | { type: 'agent'; id: string }
   | { type: 'conversation'; id: string }
   | { type: 'signal'; id: string }
+  | { type: 'memory-metric'; id: string }
+  | { type: 'memory-risk'; id: string }
+
+const SEVERITY_TREND_LABEL = {
+  critical: 'Critical continuity risk',
+  warning: 'Continuity warning',
+  info: 'Continuity update',
+} as const
 
 function buildInvestigation({
   snapshot,
@@ -96,6 +107,73 @@ function buildInvestigation({
     }
   }
 
+  if (target.type === 'memory-metric') {
+    const metric = snapshot.conversationMemory.metrics.find((item) => item.id === target.id)
+    const conversation = snapshot.conversations[0]
+    const agent = snapshot.matrixRows.find((item) => item.id === conversation.agentId) ?? snapshot.matrixRows[0]
+    if (!metric || !conversation || !agent) return null
+    return {
+      id: `memory-metric-${metric.id}`,
+      sourceType: 'signal',
+      agentId: agent.id,
+      agentName: `Conversation memory · ${metric.label}`,
+      trustScore: agent.trustScore,
+      status: agent.status,
+      trendLabel: `${metric.label} ${metric.value}${metric.delta ? ` · ${metric.delta}` : ''}`,
+      conversationSnapshot: {
+        userQuestion: snapshot.conversationMemory.flow.steps[0]?.caption ?? conversation.userQuestion,
+        aiResponse:
+          snapshot.conversationMemory.flow.steps[snapshot.conversationMemory.flow.steps.length - 1]?.caption ??
+          conversation.aiResponse,
+        outcome: `${metric.label}: ${metric.value}${metric.delta ? ` (${metric.delta})` : ''}`,
+      },
+      trustAnalysis: [
+        `${metric.label} stands at ${metric.value}${metric.delta ? ` (${metric.delta} vs prior)` : ''}.`,
+        `Trend: ${metric.trend === 'up' ? 'improving' : metric.trend === 'down' ? 'softening' : 'flat'} across the selected range.`,
+        'Pair with retry/clarification and high-confidence failure signals before changing prompts.',
+      ],
+      humanIntervention: snapshot.conversationMemory.risks
+        .slice(0, 3)
+        .map((risk) => `${risk.agentName}: ${risk.signal}`),
+      suggestedImprovements: [
+        'Sample 5–10 long threads tied to this metric and review entity-grounding quality.',
+        'Confirm summarization or memory window settings for affected agents.',
+        'If metric persists, route long threads to a longer-context model tier.',
+      ],
+      relatedTrends: snapshot.trends,
+    }
+  }
+
+  if (target.type === 'memory-risk') {
+    const risk = snapshot.conversationMemory.risks.find((item) => item.id === target.id)
+    if (!risk) return null
+    const agent = snapshot.matrixRows.find((item) => item.id === risk.agentId) ?? snapshot.matrixRows[0]
+    const conversation =
+      snapshot.conversations.find((item) => item.agentId === risk.agentId) ?? snapshot.conversations[0]
+    return {
+      id: `memory-risk-${risk.id}`,
+      sourceType: 'signal',
+      agentId: risk.agentId,
+      agentName: risk.agentName,
+      trustScore: agent?.trustScore ?? 80,
+      status: agent?.status ?? 'Watch',
+      trendLabel: `${SEVERITY_TREND_LABEL[risk.severity]}${risk.affectedSessions ? ` · ${risk.affectedSessions}` : ''}`,
+      conversationSnapshot: {
+        userQuestion: conversation.userQuestion,
+        aiResponse: conversation.aiResponse,
+        outcome: risk.signal,
+      },
+      trustAnalysis: [
+        risk.signal,
+        ...(risk.affectedSessions ? [`Affected scope: ${risk.affectedSessions}.`] : []),
+        'Continuity signals weigh into trust alongside retry/clarification and escalations.',
+      ],
+      humanIntervention: conversation.interventionSummary,
+      suggestedImprovements: conversation.suggestedImprovements,
+      relatedTrends: snapshot.trends,
+    }
+  }
+
   const signal = snapshot.trustSignals.find((item) => item.id === target.id)
   const conversation = snapshot.conversations[0]
   const agent = snapshot.matrixRows.find((item) => item.id === conversation.agentId) ?? snapshot.matrixRows[0]
@@ -129,6 +207,8 @@ export function AgentEffectivenessTrustPage() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const [summaryOpen, setSummaryOpen] = useState(false)
   const [summaryContentReady, setSummaryContentReady] = useState(false)
+  const [contextCheckOpen, setContextCheckOpen] = useState(false)
+  const [contextCheckReady, setContextCheckReady] = useState(false)
   const [drawerTarget, setDrawerTarget] = useState<DrawerTarget>({ type: 'agent', id: 'support-copilot' })
 
   useEffect(() => {
@@ -140,6 +220,16 @@ export function AgentEffectivenessTrustPage() {
     const id = window.setTimeout(() => setSummaryContentReady(true), 2600)
     return () => window.clearTimeout(id)
   }, [summaryOpen])
+
+  useEffect(() => {
+    if (!contextCheckOpen) {
+      setContextCheckReady(false)
+      return
+    }
+    setContextCheckReady(false)
+    const id = window.setTimeout(() => setContextCheckReady(true), 2600)
+    return () => window.clearTimeout(id)
+  }, [contextCheckOpen])
 
   const snapshot = trustData[timeRange]
   const investigation = buildInvestigation({ snapshot, target: drawerTarget })
@@ -252,6 +342,20 @@ export function AgentEffectivenessTrustPage() {
           />
           <TrustTrendsAdoption series={snapshot.trends} />
           <PromptPerformanceSection data={snapshot.promptPerformance} />
+          <ConversationMemorySection
+            data={snapshot.conversationMemory}
+            onOpenMetric={(id) => {
+              setDrawerTarget({ type: 'memory-metric', id })
+              setDrawerOpen(true)
+            }}
+            onOpenRisk={(id) => {
+              setDrawerTarget({ type: 'memory-risk', id })
+              setDrawerOpen(true)
+            }}
+            onRunContextCheck={() => setContextCheckOpen(true)}
+            contextCheckActive={contextCheckOpen}
+            contextCheckGenerating={contextCheckOpen && !contextCheckReady}
+          />
         </main>
 
         <Agent360Footer />
@@ -271,6 +375,26 @@ export function AgentEffectivenessTrustPage() {
         loading={<AISummaryLoadingState />}
       >
         <AISummaryContent sections={agentEffectivenessTrustBoardSummary} />
+      </AISummaryDrawer>
+
+      <AISummaryDrawer
+        open={contextCheckOpen}
+        onClose={() => setContextCheckOpen(false)}
+        title="AI Context Check"
+        subtitle={`${aiContextCheckSubtitle} · ${boardSummarySubtitle(timeRange)}`}
+        contentReady={contextCheckReady}
+        loading={
+          <AISummaryLoadingState
+            steps={[
+              'Sampling multi-turn conversations…',
+              'Checking follow-up and reference resolution…',
+              'Scoring continuity and repeat-prompt signals…',
+              'Preparing context check summary…',
+            ]}
+          />
+        }
+      >
+        <AISummaryContent sections={conversationMemoryAIContextCheck} />
       </AISummaryDrawer>
     </div>
   )

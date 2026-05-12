@@ -247,4 +247,73 @@ export const TRUST_METRIC_EXPLAINS: Record<string, MetricExplainContent> = {
     measured: 'Summed completion tokens divided by conversation count per version, from agent runtime billing or usage logs.',
     ops: 'Watch this alongside success and escalations so efficiency gains do not trade away trust.',
   },
+  'section-conversation-memory': {
+    title: 'Conversation context & memory',
+    definition:
+      'Operational view of whether agents understand follow-ups, keep state across turns, and resolve references like “that order” without making users repeat themselves.',
+    why: 'Context breaks read as a trust break: users repeat themselves, threads grow, satisfaction drops—even when single answers look correct.',
+    measured:
+      'Aggregated from multi-turn session signals: follow-up classifiers, reference-resolution checks, repeat-detection rules, and conversation length vs. context window utilization.',
+    ops: 'Use after long-thread agent rollouts, memory or summary changes, or CRM sync updates to confirm continuity is healthy.',
+  },
+  'follow-up-understanding': {
+    title: 'Follow-up understanding',
+    definition:
+      'Percentage of follow-up questions where the agent correctly used previous conversation context.',
+    why: 'Direct read on whether the agent “remembers what we were talking about” instead of treating each turn fresh.',
+    measured:
+      'Follow-up turns classified against prior intent; success means the model used relevant earlier context without re-asking or drifting.',
+    ops: 'Drops here usually pair with a rise in repeat prompts—investigate memory windows and summarization first.',
+  },
+  'session-continuity': {
+    title: 'Session continuity',
+    definition: 'Measures whether the agent maintains coherent conversational state across sessions.',
+    why: 'Continuity is the difference between an assistant that feels persistent and one that resets on every visit.',
+    measured:
+      'Cross-session state checks (user, account, recent intent) plus continuity heuristics across reconnects within the same thread or returning sessions.',
+    ops: 'Stable continuity is expected after CRM and identity-sync updates; regressions usually trace to those integrations.',
+  },
+  'context-resolution': {
+    title: 'Context resolution',
+    definition:
+      'Percentage of references like “that order” or “the previous issue” resolved correctly to the right entity.',
+    why: 'Reference resolution is where trust often breaks silently—a confident answer about the wrong order is worse than no answer.',
+    measured:
+      'Anaphora and entity-link signals against conversation memory; resolved means the linked entity matches the true target in the session.',
+    ops: 'Pair with high-confidence failures—if both drift up, prioritize retrieval and entity-grounding work over prompt rewrites.',
+  },
+  'repeat-prompt-rate': {
+    title: 'Repeat prompt rate',
+    definition:
+      'Share of conversations where users repeated information because context was lost.',
+    why: 'Repeating yourself is the clearest user-visible memory failure—and a strong predictor of dropped satisfaction.',
+    measured:
+      'Detector for repeated personal, account, or intent details across turns within the same session.',
+    ops: 'Rising rates usually trace to truncated context, missing entity memory, or a recent prompt change—investigate in that order.',
+  },
+  'context-truncation-risk': {
+    title: 'Context truncation risk',
+    definition:
+      'Share of long conversations potentially affected by context window limits.',
+    why: 'Long threads can quietly lose earlier context—answers may stay confident but no longer ground in what was said early on.',
+    measured:
+      'Conversations whose total context approaches or exceeds the deployed model’s window, plus heuristics on dropped early-turn references.',
+    ops: 'Address with summarization, longer-window routing for risky intents, or proactive escalations before quality breaks.',
+  },
+  'section-conversation-memory-flow': {
+    title: 'Multi-turn context flow',
+    definition:
+      'A representative multi-turn trace that shows how context flows through one conversation: question → follow-up → reference resolution → final answer.',
+    why: 'Grounds the metrics in a story so non-technical reviewers can see what good continuity looks like.',
+    measured: 'Curated examples from sampled sessions for the selected time range, with PII scrubbed.',
+    ops: 'Use during reviews to point at the exact step that broke when a metric regresses.',
+  },
+  'section-conversation-memory-risks': {
+    title: 'Context risk signals',
+    definition:
+      'Operational alerts where an agent shows signs of context loss, truncation, or repeated-prompt friction.',
+    why: 'Pulls the most actionable continuity issues out of the metrics so on-call can move fast.',
+    measured: 'Threshold-based rules over the memory metrics plus deploy/release correlation.',
+    ops: 'Open a signal to investigate affected sessions and patterns inline.',
+  },
 }
